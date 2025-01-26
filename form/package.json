@@ -1,5 +1,5 @@
 {
-  "name": "sports-day-form",
+  "name": "@sports-day/form",
   "version": "0.1.0",
   "private": true,
   "scripts": {

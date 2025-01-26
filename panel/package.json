@@ -1,5 +1,5 @@
 {
-  "name": "sports-day-panel",
+  "name": "@sports-day/panel",
   "version": "1.0.0",
   "private": true,
   "scripts": {
