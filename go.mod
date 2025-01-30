@@ -5,6 +5,7 @@ go 1.23.5
 require (
 	github.com/99designs/gqlgen v0.17.63
 	github.com/amacneil/dbmate/v2 v2.25.0
+	github.com/go-sql-driver/mysql v1.8.1
 	github.com/joho/godotenv v1.5.1
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kenshaw/inflector v0.2.0
@@ -14,6 +15,8 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.21
 	github.com/xo/xo v1.0.2
 	golang.org/x/tools v0.29.0
+	gorm.io/driver/mysql v1.5.7
+	gorm.io/gorm v1.25.12
 	mvdan.cc/gofumpt v0.6.0
 )
 
@@ -40,7 +43,6 @@ require (
 	github.com/go-faster/errors v0.7.1 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/goccy/go-yaml v1.11.3 // indirect
@@ -107,5 +109,4 @@ require (
 	google.golang.org/protobuf v1.36.3 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/bigquery v1.2.0 // indirect
-	gorm.io/gorm v1.25.12 // indirect
 )

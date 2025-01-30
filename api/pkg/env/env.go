@@ -9,8 +9,7 @@ import (
 
 type Env struct {
 	RDB struct {
-		Host string `envconfig:"RDB_HOST" default:"mysql"`
-		Port int    `envconfig:"RDB_PORT" default:"3306"`
+		Address string `envconfig:"RDB_ADDRESS" default:"mysql:3306"`
 		User string `envconfig:"RDB_USER" default:"root"`
 		Pass string `envconfig:"RDB_PASS" default:"root"`
 		Name string `envconfig:"RDB_NAME" default:"sportsday"`
