@@ -43,3 +43,6 @@ bin
 
 # dbmate
 api/db_schema/schema.sql
+
+# .vscode
+.vscode
