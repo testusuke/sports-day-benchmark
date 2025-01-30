@@ -2,13 +2,21 @@ MD := $(subst $(BSLASH),$(FSLASH),$(shell dirname "$(realpath $(lastword $(MAKEF
 export GOBIN := $(MD)/bin
 export PATH := $(GOBIN):$(PATH)
 
-RDB_HOST ?= mysql
-RDB_PORT ?= 3306
-RDB_USER ?= root
-RDB_PASS ?= root
-RDB_NAME ?= sportsday
-BACKEND_DIR ?= "api"
+# .envがなければ終了
+ifeq ($(shell test -f .env && echo "true"),)
+$(error .envを作成してください)
+endif
+
+# 環境変数
+RDB_HOST ?= $(shell cat .env | grep RDB_HOST | cut -d '=' -f 2)
+RDB_PORT ?= $(shell cat .env | grep RDB_PORT | cut -d '=' -f 2)
+RDB_USER ?= $(shell cat .env | grep RDB_USER | cut -d '=' -f 2)
+RDB_PASS ?= $(shell cat .env | grep RDB_PASS | cut -d '=' -f 2)
+RDB_NAME ?= $(shell cat .env | grep RDB_NAME | cut -d '=' -f 2)
 DATABASE_HOST ?= "mysql://$(RDB_USER):$(RDB_PASS)@$(RDB_HOST):$(RDB_PORT)"
+
+# 定数
+BACKEND_DIR := "./api"
 
 .PHONY: help
 help: ## ヘルプを出力
