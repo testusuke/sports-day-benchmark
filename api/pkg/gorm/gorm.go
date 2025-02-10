@@ -1,9 +1,10 @@
 package gorm
 
 import (
+	"time"
+
 	"sports-day/api/pkg/env"
 	"sports-day/api/pkg/errors"
-	"time"
 
 	"github.com/go-sql-driver/mysql"
 	gormmysql "gorm.io/driver/mysql"
@@ -14,13 +15,13 @@ import (
 func Open(logger gormlogger.Writer) (*gorm.DB, error) {
 	config := env.Get()
 	mysqlConfig := mysql.Config{
-		User:                 config.RDB.User,
-		Passwd:               config.RDB.Pass,
-		Addr:                 config.RDB.Address,
-		DBName:               config.RDB.Name,
-		Net:                  "tcp",
-		ParseTime:            true,
-		Loc:                  time.Local,
+		User:      config.RDB.User,
+		Passwd:    config.RDB.Pass,
+		Addr:      config.RDB.Address,
+		DBName:    config.RDB.Name,
+		Net:       "tcp",
+		ParseTime: true,
+		Loc:       time.Local,
 	}
 	// create dsn
 	dsn := mysqlConfig.FormatDSN()
