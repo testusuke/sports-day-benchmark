@@ -18,7 +18,19 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
+	users := []*model.User{
+		{
+			ID:   "1",
+			Name: "John Doe",
+			Email: "john.doe@example.com",
+		},
+		{
+			ID:    "2",
+			Name:  "Steve Jobs",
+			Email: "steve.jobs@example.com",
+		},
+	}
+	return users, nil
 }
 
 // User is the resolver for the user field.
