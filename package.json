@@ -4,8 +4,7 @@
   "repository": "git@github.com:Sports-day/sports-day.git",
   "private": true,
   "workspaces": [
-    "panel",
-    "admin",
-    "form"
+    "packages/*",
+    "apps/*"
   ]
 }
