@@ -19,6 +19,7 @@ type Env struct {
 		Port        int      `envconfig:"SERVER_PORT" default:"8080"`
 		CORSOrigins []string `envconfig:"SERVER_CORS_ORIGINS" default:"*"`
 	}
+	Debug bool `envconfig:"DEBUG" default:"false"`
 }
 
 var _env Env

@@ -6,36 +6,40 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"sports-day/api/graph/model"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUserInput) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: CreateUser - createUser"))
+	user, err := r.UserService.Create(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatUserResponse(user), nil
 }
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	users := []*model.User{
-		{
-			ID:   "1",
-			Name: "John Doe",
-			Email: "john.doe@example.com",
-		},
-		{
-			ID:    "2",
-			Name:  "Steve Jobs",
-			Email: "steve.jobs@example.com",
-		},
+	users, err := r.UserService.List(ctx)
+	if err != nil {
+		return nil, err
 	}
-	return users, nil
+
+	res := make([]*model.User, 0, len(users))
+	for _, user := range users {
+		res = append(res, model.FormatUserResponse(user))
+	}
+	return res, nil
 }
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
+	user, err := r.UserService.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatUserResponse(user), nil
 }
 
 // Mutation returns MutationResolver implementation.

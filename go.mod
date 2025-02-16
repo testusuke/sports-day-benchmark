@@ -6,11 +6,14 @@ require (
 	github.com/99designs/gqlgen v0.17.64
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/joho/godotenv v1.5.1
+	github.com/justinas/alice v1.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kenshaw/inflector v0.2.0
 	github.com/kenshaw/snaker v0.2.0
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/rs/cors v1.11.1
+	github.com/rs/zerolog v1.33.0
 	github.com/vektah/gqlparser/v2 v2.5.22
 	github.com/xo/xo v1.0.2
 	golang.org/x/tools v0.30.0

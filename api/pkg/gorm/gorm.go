@@ -1,8 +1,10 @@
 package gorm
 
 import (
+	"fmt"
 	"time"
 
+	"sports-day/api"
 	"sports-day/api/pkg/env"
 	"sports-day/api/pkg/errors"
 
@@ -48,4 +50,24 @@ func Open(logger gormlogger.Writer) (*gorm.DB, error) {
 	}
 
 	return db, nil
+}
+
+func OpenWithRetry(logger gormlogger.Writer) (*gorm.DB, error) {
+	for i := 0; i < 100; i++ {
+		db, err := Open(logger)
+		if err == nil {
+			api.Logger.Info().
+				Str("label", "database").
+				Msg("Successfully connected to database")
+			return db, nil
+		}
+		
+		api.Logger.Warn().
+			Err(err).
+			Str("label", "database").
+			Msg("failed to connect to database. retry...")
+		// wait for 3 seconds
+		time.Sleep(time.Second * 3)
+	}
+	return nil, errors.Wrap(fmt.Errorf("failed to connect to database"))
 }
