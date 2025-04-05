@@ -3,11 +3,18 @@ input CreateUserInput {
   email: String!
 }
 
+input LoginInput {
+  code: String!
+  redirectURL: String!
+}
+
 type Query {
   users: [User!]!
   user(id: ID!): User!
+  me: User!
 }
 
 type Mutation {
   createUser(input: CreateUserInput!): User!
+  login(input: LoginInput!): AuthResponse!
 }

@@ -8,12 +8,14 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"sports-day/api"
 	"sports-day/api/graph"
 	"sports-day/api/middleware"
+	"sports-day/api/pkg/auth"
 	"sports-day/api/pkg/env"
 	"sports-day/api/pkg/gorm"
 	"sports-day/api/repository"
@@ -45,15 +47,39 @@ func main() {
 			Msg("Failed to connect to database")
 	}
 
+	// setup oidc
+	oidcRedirectURLs := strings.Split(env.Get().Auth.OIDC.RedirectURL, ",")
+	oidc, err := auth.NewOIDC(
+		context.Background(),
+		env.Get().Auth.OIDC.IssuerURL,
+		env.Get().Auth.OIDC.ClientID,
+		env.Get().Auth.OIDC.SecretKey,
+		oidcRedirectURLs,
+	)
+	if err != nil {
+		api.Logger.Fatal().
+			Err(err).
+			Str("label", "auth").
+			Msg("Failed to create oidc service")
+	}
+
+	// setup jwt
+	jwt := auth.NewJWT(
+		[]byte(env.Get().Auth.JWT.SecretKey),
+		env.Get().Auth.JWT.ExpirySeconds,
+	)
+
 	// repository
 	userRepository := repository.NewUser()
+
 	// service
 	userService := service.NewUser(db, userRepository)
+	authService := service.NewAuthService(db, userRepository, oidc, jwt)
 
 	// graphql
-	config := graph.Config{Resolvers: graph.NewResolver(userService)}
+	config := graph.Config{Resolvers: graph.NewResolver(userService, authService)}
 	srv := handler.New(graph.NewExecutableSchema(config))
-	
+
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
@@ -67,7 +93,7 @@ func main() {
 	if env.Get().Debug {
 		mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	}
-	mux.Handle("/query", middleware.SetupMiddleware(srv))
+	mux.Handle("/query", middleware.SetupMiddleware(srv, jwt))
 
 	address := fmt.Sprintf("%s:%d", env.Get().Server.Host, env.Get().Server.Port)
 

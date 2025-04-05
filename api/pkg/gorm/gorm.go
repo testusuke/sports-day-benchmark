@@ -61,7 +61,7 @@ func OpenWithRetry(logger gormlogger.Writer) (*gorm.DB, error) {
 				Msg("Successfully connected to database")
 			return db, nil
 		}
-		
+
 		api.Logger.Warn().
 			Err(err).
 			Str("label", "database").

@@ -2,9 +2,19 @@
 
 package model
 
+type AuthResponse struct {
+	Token string `json:"token"`
+	User  *User  `json:"user"`
+}
+
 type CreateUserInput struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
+}
+
+type LoginInput struct {
+	Code        string `json:"code"`
+	RedirectURL string `json:"redirectURL"`
 }
 
 type Mutation struct {

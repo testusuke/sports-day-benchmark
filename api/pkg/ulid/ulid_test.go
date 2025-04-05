@@ -9,7 +9,7 @@ func TestMake(t *testing.T) {
 	ids := make(map[string]bool)
 	for i := 0; i < 1000; i++ {
 		id := Make()
-		
+
 		// 長さの検証（ULIDは26文字）
 		if len(id) != 26 {
 			t.Errorf("ULID length should be 26, got %d", len(id))
@@ -64,4 +64,4 @@ func TestValid(t *testing.T) {
 			}
 		})
 	}
-} 
+}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"sports-day/api/db_model"
 	"sports-day/api/graph/model"
 	"sports-day/api/pkg/errors"
@@ -12,7 +13,7 @@ import (
 )
 
 type User struct {
-	db *gorm.DB
+	db             *gorm.DB
 	userRepository repository.User
 }
 

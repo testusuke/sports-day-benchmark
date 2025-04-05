@@ -35,3 +35,18 @@ func (r user) Create(ctx context.Context, db *gorm.DB, user *db_model.User) (*db
 	}
 	return user, nil
 }
+
+func (r user) FindByEmail(ctx context.Context, db *gorm.DB, email string) (*db_model.User, error) {
+	var user db_model.User
+	if err := db.First(&user, "email = ?", email).Error; err != nil {
+		return nil, errors.Wrap(err)
+	}
+	return &user, nil
+}
+
+func (r user) Update(ctx context.Context, db *gorm.DB, user *db_model.User) (*db_model.User, error) {
+	if err := db.Save(user).Error; err != nil {
+		return nil, errors.Wrap(err)
+	}
+	return user, nil
+}

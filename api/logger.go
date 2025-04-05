@@ -25,7 +25,7 @@ func NewLogger(debug bool) {
 	}
 	zerolog.SetGlobalLevel(level)
 	output := zerolog.ConsoleWriter{
-		Out:        os.Stdout,
+		Out: os.Stdout,
 	}
 
 	logger := zerolog.New(output).

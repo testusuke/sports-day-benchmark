@@ -19,6 +19,15 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.CreateUse
 	return model.FormatUserResponse(user), nil
 }
 
+// Login is the resolver for the login field.
+func (r *mutationResolver) Login(ctx context.Context, input model.LoginInput) (*model.AuthResponse, error) {
+	authResponse, err := r.AuthService.Login(ctx, input.Code, input.RedirectURL)
+	if err != nil {
+		return nil, err
+	}
+	return authResponse, nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	users, err := r.UserService.List(ctx)
@@ -36,6 +45,15 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
 	user, err := r.UserService.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatUserResponse(user), nil
+}
+
+// Me is the resolver for the me field.
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	user, err := r.AuthService.GetCurrentUser(ctx)
 	if err != nil {
 		return nil, err
 	}
