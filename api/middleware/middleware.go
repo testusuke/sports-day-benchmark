@@ -11,7 +11,7 @@ import (
 func SetupMiddleware(handler http.Handler, jwt *auth.JWT) http.Handler {
 	chain := alice.New()
 	chain = chain.Append(CORS().Handler)
-	chain = chain.Append(Auth(jwt))
+	// chain = chain.Append(Auth(jwt))
 
 	return chain.Then(handler)
 }
