@@ -3,3 +3,8 @@ type User {
   name: String!
   email: String!
 }
+
+type AuthResponse {
+  token: String!
+  user: User!
+}

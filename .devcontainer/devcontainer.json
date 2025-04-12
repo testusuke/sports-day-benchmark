@@ -14,7 +14,7 @@
       "version": "3.12"
     }
   },
-  "forwardPorts": [3000, 3001, 3002, 8080],
+  "forwardPorts": [3000, 3001, 3002, 8080, 8888],
   "portsAttributes": {
     "3000": {
       "label": "panel",
@@ -30,6 +30,10 @@
     },
     "8080": {
       "label": "api",
+      "onAutoForward": "notify"
+    },
+    "8888": {
+      "label": "keycloak",
       "onAutoForward": "notify"
     }
   },

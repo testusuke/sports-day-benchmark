@@ -4,15 +4,21 @@ go 1.23.5
 
 require (
 	github.com/99designs/gqlgen v0.17.64
+	github.com/coreos/go-oidc/v3 v3.12.0
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/joho/godotenv v1.5.1
+	github.com/justinas/alice v1.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kenshaw/inflector v0.2.0
 	github.com/kenshaw/snaker v0.2.0
 	github.com/oklog/ulid/v2 v2.1.0
 	github.com/pkg/errors v0.9.1
+	github.com/rs/cors v1.11.1
+	github.com/rs/zerolog v1.33.0
 	github.com/vektah/gqlparser/v2 v2.5.22
 	github.com/xo/xo v1.0.2
+	golang.org/x/oauth2 v0.25.0
 	golang.org/x/tools v0.30.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.12
@@ -41,6 +47,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
 	github.com/go-faster/errors v0.7.1 // indirect
+	github.com/go-jose/go-jose/v4 v4.0.2 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
@@ -98,7 +105,6 @@ require (
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
 	golang.org/x/mod v0.23.0 // indirect
 	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/oauth2 v0.25.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.22.0 // indirect

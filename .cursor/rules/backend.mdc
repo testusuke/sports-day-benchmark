@@ -1,0 +1,91 @@
+---
+description: Go-lang Backend Architecture
+globs: api/
+alwaysApply: false
+---
+# ファイル構造
+```
+api
+├── cmd/api/main.go # エントリーポイント
+├── db_model # テーブル構造(自動生成)
+│   ├── db.xo.go
+│   ├── schemamigration.xo.go
+│   ├── templates
+│   └── <domain>.xo.go
+├── db_schema # マイグレーション
+│   ├── migrations
+│   └── seed
+├── graph # GraphQL gqlgen 自動生成
+│   ├── generated.go
+│   ├── model
+│   │   ├── format_response.go # DBモデルからスキーマに変換する関数
+│   │   └── models_gen.go
+│   ├── model.graphqls # GraphQL モデルスキーマ
+│   ├── resolver.go
+│   ├── schema.graphqls # GraphQL スキーマ
+│   └── schema.resolvers.go
+├── logger.go # ログ
+├── middleware # httpミドルウェア
+│   └── ...
+├── pkg # 共通パッケージ
+│   └── ...
+├── repository # レポジトリ層 データの永続化
+│   ├── <domain>.go
+│   └── <domain>_sql.go
+└── service # サービス層 ユースケース定義
+    └── <domain>.go
+```
+
+# アーキテクチャ
+3つの層によって構成されます。このアーキテクチャで実装が困難な場合は、別の方法を採用してください。
+
+## プレゼンテーション層(api/grah)
+GraphQLリクエストを受け取り、サービス層で必要な処理を行ったのちレスポンスを返します。
+リゾルバやデータローダ、レスポンスフォーマッターの実装を行います。
+入力はGraphQLのリクエストスキーマ、出力はGraphQLのレスポンススキーマです。
+
+## サービス層(api/service)
+ドメインごとのルールやユースケースを定義して、必要に応じてレポジトリ層を呼び出します。
+複数ドメインを扱ったユースケースを実装する場合は、オーケストラレーションサービスを実装し、必要に応じて集約データ構造(DTO)を定義します。
+入力はGraphQLのリクエストスキーマ、出力はデータベースのモデルです。
+
+## レポジトリ層(api/repository)
+データベースや外部ストレージへの、データ永続化を担当します。
+CRUD操作などのデータ永続化処理をカプセル化し、サービス層からは抽象化されたインターフェースとして利用されます。
+入出力はデータベースのモデルです。
+
+# データベース
+MySQLを採用します。
+
+## マイグレーション dbmate
+マイグレーションファイルでスキーマの変更履歴を可視化・トラッキングする。
+
+- マイグレーション作成
+```shell
+$ make migrate-new
+Comments: <コメントメッセージを入力>
+```
+
+- マイグレーション実行
+```shell
+$ make migrate-up
+```
+
+- マイグレーションロールバック
+```shell
+$ make migrate-down
+```
+
+## GORM
+`api/repository`ディレクトリでGORMを通じてデータベースを操作します。構造体は、xoによって生成される`api/db_model/<domain>.xo.go`を使います。
+
+# 自動生成
+以下の条件の場合に、自動生成コマンドを打つ必要があります。
+- マイグレーションを実行した場合
+- graphqlスキーマファイルを変更した場合
+
+コマンド
+```shell
+$ make gen
+```
+

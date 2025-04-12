@@ -1,19 +1,30 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"syscall"
+	"time"
 
+	"sports-day/api"
 	"sports-day/api/graph"
+	"sports-day/api/middleware"
+	"sports-day/api/pkg/auth"
 	"sports-day/api/pkg/env"
+	"sports-day/api/pkg/gorm"
+	"sports-day/api/repository"
+	"sports-day/api/service"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
-	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/vektah/gqlparser/v2/ast"
 )
 
 func main() {
@@ -21,25 +32,111 @@ func main() {
 		log.Fatalf("Failed to load environment variables: %v", err)
 	}
 
-	host := env.Get().Server.Host
-	port := env.Get().Server.Port
+	// setup logger
+	api.NewLogger(env.Get().Debug)
 
-	srv := handler.New(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	// fix timezone as Asia/Tokyo
+	time.FixedZone("Asia/Tokyo", 9*60*60)
+
+	// setup database
+	db, err := gorm.OpenWithRetry(api.Logger)
+	if err != nil {
+		api.Logger.Fatal().
+			Err(err).
+			Str("label", "database").
+			Msg("Failed to connect to database")
+	}
+
+	// setup oidc
+	oidcRedirectURLs := strings.Split(env.Get().Auth.OIDC.RedirectURL, ",")
+	oidc, err := auth.NewOIDC(
+		context.Background(),
+		env.Get().Auth.OIDC.IssuerURL,
+		env.Get().Auth.OIDC.ClientID,
+		env.Get().Auth.OIDC.SecretKey,
+		oidcRedirectURLs,
+	)
+	if err != nil {
+		api.Logger.Fatal().
+			Err(err).
+			Str("label", "auth").
+			Msg("Failed to create oidc service")
+	}
+
+	// setup jwt
+	jwt := auth.NewJWT(
+		[]byte(env.Get().Auth.JWT.SecretKey),
+		env.Get().Auth.JWT.ExpirySeconds,
+	)
+
+	// repository
+	userRepository := repository.NewUser()
+
+	// service
+	userService := service.NewUser(db, userRepository)
+	authService := service.NewAuthService(db, userRepository, oidc, jwt)
+
+	// graphql
+	config := graph.Config{Resolvers: graph.NewResolver(userService, authService)}
+	srv := handler.New(graph.NewExecutableSchema(config))
 
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
 
-	srv.SetQueryCache(lru.New[*ast.QueryDocument](1000))
-
 	srv.Use(extension.Introspection{})
-	srv.Use(extension.AutomaticPersistedQuery{
-		Cache: lru.New[string](100),
-	})
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	// mux
+	mux := http.NewServeMux()
 
-	log.Printf("connect to http://%s:%d/ for GraphQL playground", host, port)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil))
+	// playground only in debug mode
+	if env.Get().Debug {
+		mux.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	}
+	mux.Handle("/query", middleware.SetupMiddleware(srv, jwt))
+
+	address := fmt.Sprintf("%s:%d", env.Get().Server.Host, env.Get().Server.Port)
+
+	server := &http.Server{
+		Addr:    address,
+		Handler: mux,
+	}
+
+	// channel to confirm server shutdown
+	shutdownChan := make(chan struct{}, 1)
+
+	// start server in another goroutine
+	go func() {
+		api.Logger.Info().Msgf("Starting server on http://%s", address)
+		if err := server.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+			api.Logger.Fatal().
+				Err(err).
+				Msg("Failed to start server")
+		}
+		shutdownChan <- struct{}{}
+	}()
+
+	// create channel for graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
+	// wait for signal
+	<-quit
+	api.Logger.Info().Msg("Shutting down server...")
+
+	// set shutdown timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	// shutdown server
+	if err := server.Shutdown(ctx); err != nil {
+		api.Logger.Fatal().
+			Err(err).
+			Msg("Server forced to shutdown")
+	}
+
+	// wait for server to shutdown
+	<-shutdownChan
+
+	api.Logger.Info().Msg("Server gracefully shutdown")
 }
