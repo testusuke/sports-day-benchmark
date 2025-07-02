@@ -8,7 +8,14 @@ var (
 	*/
 	ErrUserNotFound  = NewError("USER_NOT_FOUND", "ユーザーが見つかりません")
 	ErrGroupNotFound = NewError("GROUP_NOT_FOUND", "グループが見つかりません")
+	ErrTeamNotFound  = NewError("TEAM_NOT_FOUND", "チームが見つかりません")
 
+	/*
+		Validation
+	*/
+	ErrSaveTeam       = NewError("TEAM_SAVE_FAILED", "チームの更新に失敗しました")
+	ErrAddTeamUser 	  = NewError("TEAM_USER_ADD_FAILED", "チームユーザーの追加に失敗しました")
+	ErrDeleteTeamUser = NewError("TEAM_USER_REMOVE_FAILED", "チームユーザーの削除に失敗しました")
 	/*
 		Authentication
 	*/
