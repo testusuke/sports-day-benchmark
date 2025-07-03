@@ -20,12 +20,7 @@ import {
 } from "@mui/material";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useState } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
+import { User } from "@/gql/__generated__/graphql";
 
 const GET_USERS = gql`
   query GetUsers {
