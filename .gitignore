@@ -48,3 +48,6 @@ api/db_schema/schema.sql
 .vscode
 
 .cursorignore
+
+# cline
+.clinerules
