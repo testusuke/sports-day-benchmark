@@ -73,15 +73,17 @@ func main() {
 	userRepository := repository.NewUser()
 	groupRepository := repository.NewGroup()
 	teamRepository := repository.NewTeam()
+	locationRepository := repository.NewLocation()
 
 	// service
 	userService := service.NewUser(db, userRepository)
 	authService := service.NewAuthService(db, userRepository, oidc, jwt)
 	groupService := service.NewGroup(db, groupRepository, userRepository)
 	teamService := service.NewTeam(db, teamRepository, userRepository)
+	locationService := service.NewLocation(db, locationRepository)
 
 	// graphql
-	config := graph.Config{Resolvers: graph.NewResolver(userService, authService, groupService, teamService)}
+	config := graph.Config{Resolvers: graph.NewResolver(userService, authService, groupService, teamService, locationService)}
 	srv := handler.New(graph.NewExecutableSchema(config))
 
 	srv.AddTransport(transport.Options{})
