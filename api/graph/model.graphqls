@@ -20,6 +20,11 @@ type Team {
   users: [User!]!
 }
 
+type Location {
+  id: ID!
+  name: String!
+}
+
 type AuthResponse {
   token: String!
   user: User!
