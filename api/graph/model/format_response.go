@@ -26,3 +26,10 @@ func FormatTeamResponse(team *db_model.Team) *Team {
 		GroupID: team.GroupID,
 	}
 }
+
+func FormatLocationResponse(location *db_model.Location) *Location {
+	return &Location{
+		ID:   location.ID,
+		Name: location.Name,
+	}
+}
