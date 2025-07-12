@@ -118,6 +118,33 @@ func (r *mutationResolver) UpdateTeamUsers(ctx context.Context, id string, input
 	return model.FormatTeamResponse(team), nil
 }
 
+// CreateLocation is the resolver for the createLocation field.
+func (r *mutationResolver) CreateLocation(ctx context.Context, input model.CreateLocationInput) (*model.Location, error) {
+	location, err := r.LocationService.Create(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatLocationResponse(location), nil
+}
+
+// UpdateLocation is the resolver for the updateLocation field.
+func (r *mutationResolver) UpdateLocation(ctx context.Context, id string, input model.UpdateLocationInput) (*model.Location, error) {
+	location, err := r.LocationService.Update(ctx, id, input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatLocationResponse(location), nil
+}
+
+// DeleteLocation is the resolver for the deleteLocation field.
+func (r *mutationResolver) DeleteLocation(ctx context.Context, id string) (*model.Location, error) {
+	location, err := r.LocationService.Delete(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatLocationResponse(location), nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	users, err := r.UserService.List(ctx)
@@ -194,6 +221,29 @@ func (r *queryResolver) Team(ctx context.Context, id string) (*model.Team, error
 		return nil, err
 	}
 	return model.FormatTeamResponse(team), nil
+}
+
+// Locations is the resolver for the locations field.
+func (r *queryResolver) Locations(ctx context.Context) ([]*model.Location, error) {
+	locations, err := r.LocationService.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*model.Location, 0, len(locations))
+	for _, location := range locations {
+		res = append(res, model.FormatLocationResponse(location))
+	}
+	return res, nil
+}
+
+// Location is the resolver for the location field.
+func (r *queryResolver) Location(ctx context.Context, id string) (*model.Location, error) {
+	location, err := r.LocationService.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatLocationResponse(location), nil
 }
 
 // Mutation returns MutationResolver implementation.

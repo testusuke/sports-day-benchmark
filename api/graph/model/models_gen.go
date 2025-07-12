@@ -11,6 +11,10 @@ type CreateGroupInput struct {
 	Name string `json:"name"`
 }
 
+type CreateLocationInput struct {
+	Name string `json:"name"`
+}
+
 type CreateTeamInput struct {
 	Name    string   `json:"name"`
 	GroupID string   `json:"groupId"`
@@ -20,6 +24,11 @@ type CreateTeamInput struct {
 type CreateUserInput struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
+}
+
+type Location struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type LoginInput struct {
@@ -39,6 +48,10 @@ type UpdateGroupInput struct {
 
 type UpdateGroupUsersInput struct {
 	UserIds []string `json:"userIds"`
+}
+
+type UpdateLocationInput struct {
+	Name *string `json:"name,omitempty"`
 }
 
 type UpdateTeamInput struct {

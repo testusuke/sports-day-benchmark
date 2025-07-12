@@ -36,6 +36,14 @@ input UpdateTeamUsersInput {
   removeUserIds: [ID!]
 }
 
+input CreateLocationInput {
+  name: String!
+}
+
+input UpdateLocationInput {
+  name: String
+}
+
 
 
 type Query {
@@ -52,6 +60,14 @@ type Query {
   ID指定でチームを取得する
   """
   team(id: ID!): Team!
+  """
+  場所をまとめて取得する
+  """
+  locations: [Location!]!
+  """
+  ID指定で場所を取得する
+  """
+  location(id: ID!): Location!
 }
 
 type Mutation {
@@ -78,4 +94,16 @@ type Mutation {
   チームメンバーを更新する
   """
   updateTeamUsers(id: ID!, input: UpdateTeamUsersInput!): Team!
+  """
+  場所を追加する
+  """
+  createLocation(input: CreateLocationInput!): Location!
+  """
+  場所の情報を更新する
+  """
+  updateLocation(id: ID!, input: UpdateLocationInput!): Location!
+  """
+  場所を削除する
+  """
+  deleteLocation(id: ID!): Location!
 }

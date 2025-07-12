@@ -4,6 +4,7 @@ DELETE FROM teams;
 DELETE FROM group_users;
 DELETE FROM `groups`;
 DELETE FROM users;
+DELETE FROM locations;
 
 INSERT INTO users (id, name, email)
 VALUES  ('01JS96Z96329JZHCYD45D72SYB', '山田 太郎', 'ta_yamada@dev.sports-day.net'),
@@ -118,6 +119,16 @@ VALUES
   ('01JSB1ZQK0A2X6JQK1Q2X6JQX', 'ライジングサンB', '01JS96Z963QE7DYBQ6Q7BH95S8'),
   ('01JSB1ZQK0A2X6JQK1Q2X6JQY', 'ライジングサンC', '01JS96Z963QE7DYBQ6Q7BH95S8');
 
+-- 場所データ挿入
+INSERT INTO locations (id, name)
+VALUES
+  ('01JSC1ZQK0A2X6JQK1Q2X6JQA', '体育館'),
+  ('01JSC1ZQK0A2X6JQK1Q2X6JQB', 'グラウンド'),
+  ('01JSC1ZQK0A2X6JQK1Q2X6JQC', 'テニスコート'),
+  ('01JSC1ZQK0A2X6JQK1Q2X6JQD', 'プール'),
+  ('01JSC1ZQK0A2X6JQK1Q2X6JQE', '武道場'),
+  ('01JSC1ZQK0A2X6JQK1Q2X6JQF', '多目的ホール');
+
 -- チームユーザー中間テーブル
 INSERT INTO team_users (user_id, team_id)
 VALUES
@@ -211,3 +222,4 @@ DELETE FROM teams;
 DELETE FROM group_users;
 DELETE FROM `groups`;
 DELETE FROM users;
+DELETE FROM locations;
