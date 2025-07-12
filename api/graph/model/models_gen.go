@@ -26,6 +26,11 @@ type CreateUserInput struct {
 	Email string `json:"email"`
 }
 
+type Location struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type LoginInput struct {
 	Code        string `json:"code"`
 	RedirectURL string `json:"redirectURL"`
