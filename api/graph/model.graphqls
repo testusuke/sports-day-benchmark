@@ -24,3 +24,8 @@ type AuthResponse {
   token: String!
   user: User!
 }
+
+type Rule {
+  id: ID
+  rule: String!
+}

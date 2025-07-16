@@ -26,3 +26,10 @@ func FormatTeamResponse(team *db_model.Team) *Team {
 		GroupID: team.GroupID,
 	}
 }
+
+func FormatRuleResponse(rule *db_model.Rule) *Rule {
+	return &Rule{
+		ID:   rule.ID,
+		Rule: rule.Rule,
+	}
+}

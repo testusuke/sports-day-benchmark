@@ -28,7 +28,7 @@ input CreateTeamInput {
 
 input UpdateTeamInput {
   name: String
-  groupId: String 
+  groupId: String
 }
 
 input UpdateTeamUsersInput {
@@ -36,7 +36,13 @@ input UpdateTeamUsersInput {
   removeUserIds: [ID!]
 }
 
+input CreateRuleInput {
+  rule: String!
+}
 
+input UpdateRuleInput {
+  rule: String
+}
 
 type Query {
   users: [User!]!
@@ -52,6 +58,8 @@ type Query {
   ID指定でチームを取得する
   """
   team(id: ID!): Team!
+  rule(id: ID!): Rule!
+  rules: [Rule]!
 }
 
 type Mutation {
@@ -78,4 +86,7 @@ type Mutation {
   チームメンバーを更新する
   """
   updateTeamUsers(id: ID!, input: UpdateTeamUsersInput!): Team!
+  createRule(input: CreateRuleInput!): Rule!
+  updateRule(id: ID!, input: UpdateRuleInput!): Rule!
+  deleteRule(id: ID!): Rule!
 }

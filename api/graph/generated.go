@@ -66,13 +66,16 @@ type ComplexityRoot struct {
 	Mutation struct {
 		AddGroupUsers    func(childComplexity int, id string, input model.UpdateGroupUsersInput) int
 		CreateGroup      func(childComplexity int, input model.CreateGroupInput) int
+		CreateRule       func(childComplexity int, input model.CreateRuleInput) int
 		CreateTeam       func(childComplexity int, input model.CreateTeamInput) int
 		CreateUser       func(childComplexity int, input model.CreateUserInput) int
 		DeleteGroup      func(childComplexity int, id string) int
+		DeleteRule       func(childComplexity int, id string) int
 		DeleteTeam       func(childComplexity int, id string) int
 		Login            func(childComplexity int, input model.LoginInput) int
 		RemoveGroupUsers func(childComplexity int, id string, input model.UpdateGroupUsersInput) int
 		UpdateGroup      func(childComplexity int, id string, input model.UpdateGroupInput) int
+		UpdateRule       func(childComplexity int, id string, input model.UpdateRuleInput) int
 		UpdateTeam       func(childComplexity int, id string, input model.UpdateTeamInput) int
 		UpdateTeamUsers  func(childComplexity int, id string, input model.UpdateTeamUsersInput) int
 	}
@@ -81,10 +84,17 @@ type ComplexityRoot struct {
 		Group  func(childComplexity int, id string) int
 		Groups func(childComplexity int) int
 		Me     func(childComplexity int) int
+		Rule   func(childComplexity int, id string) int
+		Rules  func(childComplexity int) int
 		Team   func(childComplexity int, id string) int
 		Teams  func(childComplexity int) int
 		User   func(childComplexity int, id string) int
 		Users  func(childComplexity int) int
+	}
+
+	Rule struct {
+		ID   func(childComplexity int) int
+		Rule func(childComplexity int) int
 	}
 
 	Team struct {
@@ -119,6 +129,9 @@ type MutationResolver interface {
 	DeleteTeam(ctx context.Context, id string) (*model.Team, error)
 	UpdateTeam(ctx context.Context, id string, input model.UpdateTeamInput) (*model.Team, error)
 	UpdateTeamUsers(ctx context.Context, id string, input model.UpdateTeamUsersInput) (*model.Team, error)
+	CreateRule(ctx context.Context, input model.CreateRuleInput) (*model.Rule, error)
+	UpdateRule(ctx context.Context, id string, input model.UpdateRuleInput) (*model.Rule, error)
+	DeleteRule(ctx context.Context, id string) (*model.Rule, error)
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
@@ -128,6 +141,8 @@ type QueryResolver interface {
 	Group(ctx context.Context, id string) (*model.Group, error)
 	Teams(ctx context.Context) ([]*model.Team, error)
 	Team(ctx context.Context, id string) (*model.Team, error)
+	Rule(ctx context.Context, id string) (*model.Rule, error)
+	Rules(ctx context.Context) ([]*model.Rule, error)
 }
 type TeamResolver interface {
 	Group(ctx context.Context, obj *model.Team) (*model.Group, error)
@@ -223,6 +238,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateGroup(childComplexity, args["input"].(model.CreateGroupInput)), true
 
+	case "Mutation.createRule":
+		if e.complexity.Mutation.CreateRule == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createRule_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateRule(childComplexity, args["input"].(model.CreateRuleInput)), true
+
 	case "Mutation.createTeam":
 		if e.complexity.Mutation.CreateTeam == nil {
 			break
@@ -258,6 +285,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteGroup(childComplexity, args["id"].(string)), true
+
+	case "Mutation.deleteRule":
+		if e.complexity.Mutation.DeleteRule == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteRule_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteRule(childComplexity, args["id"].(string)), true
 
 	case "Mutation.deleteTeam":
 		if e.complexity.Mutation.DeleteTeam == nil {
@@ -306,6 +345,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateGroup(childComplexity, args["id"].(string), args["input"].(model.UpdateGroupInput)), true
+
+	case "Mutation.updateRule":
+		if e.complexity.Mutation.UpdateRule == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateRule_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateRule(childComplexity, args["id"].(string), args["input"].(model.UpdateRuleInput)), true
 
 	case "Mutation.updateTeam":
 		if e.complexity.Mutation.UpdateTeam == nil {
@@ -357,6 +408,25 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Me(childComplexity), true
 
+	case "Query.rule":
+		if e.complexity.Query.Rule == nil {
+			break
+		}
+
+		args, err := ec.field_Query_rule_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Rule(childComplexity, args["id"].(string)), true
+
+	case "Query.rules":
+		if e.complexity.Query.Rules == nil {
+			break
+		}
+
+		return e.complexity.Query.Rules(childComplexity), true
+
 	case "Query.team":
 		if e.complexity.Query.Team == nil {
 			break
@@ -394,6 +464,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Users(childComplexity), true
+
+	case "Rule.id":
+		if e.complexity.Rule.ID == nil {
+			break
+		}
+
+		return e.complexity.Rule.ID(childComplexity), true
+
+	case "Rule.rule":
+		if e.complexity.Rule.Rule == nil {
+			break
+		}
+
+		return e.complexity.Rule.Rule(childComplexity), true
 
 	case "Team.group":
 		if e.complexity.Team.Group == nil {
@@ -467,11 +551,13 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateGroupInput,
+		ec.unmarshalInputCreateRuleInput,
 		ec.unmarshalInputCreateTeamInput,
 		ec.unmarshalInputCreateUserInput,
 		ec.unmarshalInputLoginInput,
 		ec.unmarshalInputUpdateGroupInput,
 		ec.unmarshalInputUpdateGroupUsersInput,
+		ec.unmarshalInputUpdateRuleInput,
 		ec.unmarshalInputUpdateTeamInput,
 		ec.unmarshalInputUpdateTeamUsersInput,
 	)
@@ -655,6 +741,29 @@ func (ec *executionContext) field_Mutation_createGroup_argsInput(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_createRule_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_createRule_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_createRule_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.CreateRuleInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNCreateRuleInput2sportsᚑdayᚋapiᚋgraphᚋmodelᚐCreateRuleInput(ctx, tmp)
+	}
+
+	var zeroVal model.CreateRuleInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_createTeam_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -712,6 +821,29 @@ func (ec *executionContext) field_Mutation_deleteGroup_args(ctx context.Context,
 	return args, nil
 }
 func (ec *executionContext) field_Mutation_deleteGroup_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteRule_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_deleteRule_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_deleteRule_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (string, error) {
@@ -852,6 +984,47 @@ func (ec *executionContext) field_Mutation_updateGroup_argsInput(
 	return zeroVal, nil
 }
 
+func (ec *executionContext) field_Mutation_updateRule_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Mutation_updateRule_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	arg1, err := ec.field_Mutation_updateRule_argsInput(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["input"] = arg1
+	return args, nil
+}
+func (ec *executionContext) field_Mutation_updateRule_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Mutation_updateRule_argsInput(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (model.UpdateRuleInput, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+	if tmp, ok := rawArgs["input"]; ok {
+		return ec.unmarshalNUpdateRuleInput2sportsᚑdayᚋapiᚋgraphᚋmodelᚐUpdateRuleInput(ctx, tmp)
+	}
+
+	var zeroVal model.UpdateRuleInput
+	return zeroVal, nil
+}
+
 func (ec *executionContext) field_Mutation_updateTeamUsers_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
 	var err error
 	args := map[string]any{}
@@ -968,6 +1141,29 @@ func (ec *executionContext) field_Query_group_args(ctx context.Context, rawArgs 
 	return args, nil
 }
 func (ec *executionContext) field_Query_group_argsID(
+	ctx context.Context,
+	rawArgs map[string]any,
+) (string, error) {
+	ctx = graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["id"]; ok {
+		return ec.unmarshalNID2string(ctx, tmp)
+	}
+
+	var zeroVal string
+	return zeroVal, nil
+}
+
+func (ec *executionContext) field_Query_rule_args(ctx context.Context, rawArgs map[string]any) (map[string]any, error) {
+	var err error
+	args := map[string]any{}
+	arg0, err := ec.field_Query_rule_argsID(ctx, rawArgs)
+	if err != nil {
+		return nil, err
+	}
+	args["id"] = arg0
+	return args, nil
+}
+func (ec *executionContext) field_Query_rule_argsID(
 	ctx context.Context,
 	rawArgs map[string]any,
 ) (string, error) {
@@ -2137,6 +2333,189 @@ func (ec *executionContext) fieldContext_Mutation_updateTeamUsers(ctx context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_createRule(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createRule(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateRule(rctx, fc.Args["input"].(model.CreateRuleInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Rule)
+	fc.Result = res
+	return ec.marshalNRule2ᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createRule(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Rule_id(ctx, field)
+			case "rule":
+				return ec.fieldContext_Rule_rule(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Rule", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createRule_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateRule(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateRule(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateRule(rctx, fc.Args["id"].(string), fc.Args["input"].(model.UpdateRuleInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Rule)
+	fc.Result = res
+	return ec.marshalNRule2ᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateRule(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Rule_id(ctx, field)
+			case "rule":
+				return ec.fieldContext_Rule_rule(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Rule", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateRule_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_deleteRule(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteRule(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteRule(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Rule)
+	fc.Result = res
+	return ec.marshalNRule2ᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteRule(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Rule_id(ctx, field)
+			case "rule":
+				return ec.fieldContext_Rule_rule(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Rule", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteRule_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_users(ctx, field)
 	if err != nil {
@@ -2554,6 +2933,117 @@ func (ec *executionContext) fieldContext_Query_team(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_rule(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_rule(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Rule(rctx, fc.Args["id"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Rule)
+	fc.Result = res
+	return ec.marshalNRule2ᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_rule(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Rule_id(ctx, field)
+			case "rule":
+				return ec.fieldContext_Rule_rule(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Rule", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_rule_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_rules(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_rules(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Rules(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Rule)
+	fc.Result = res
+	return ec.marshalNRule2ᚕᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_rules(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Rule_id(ctx, field)
+			case "rule":
+				return ec.fieldContext_Rule_rule(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Rule", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -2680,6 +3170,91 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Rule_id(ctx context.Context, field graphql.CollectedField, obj *model.Rule) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Rule_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Rule_id(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Rule",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Rule_rule(ctx context.Context, field graphql.CollectedField, obj *model.Rule) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Rule_rule(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (any, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Rule, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Rule_rule(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Rule",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5101,6 +5676,33 @@ func (ec *executionContext) unmarshalInputCreateGroupInput(ctx context.Context, 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateRuleInput(ctx context.Context, obj any) (model.CreateRuleInput, error) {
+	var it model.CreateRuleInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"rule"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "rule":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rule"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Rule = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateTeamInput(ctx context.Context, obj any) (model.CreateTeamInput, error) {
 	var it model.CreateTeamInput
 	asMap := map[string]any{}
@@ -5258,6 +5860,33 @@ func (ec *executionContext) unmarshalInputUpdateGroupUsersInput(ctx context.Cont
 				return it, err
 			}
 			it.UserIds = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateRuleInput(ctx context.Context, obj any) (model.UpdateRuleInput, error) {
+	var it model.UpdateRuleInput
+	asMap := map[string]any{}
+	for k, v := range obj.(map[string]any) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"rule"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "rule":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("rule"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Rule = data
 		}
 	}
 
@@ -5596,6 +6225,27 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "createRule":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createRule(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "updateRule":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateRule(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "deleteRule":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteRule(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5792,6 +6442,50 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "rule":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_rule(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "rules":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_rules(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -5800,6 +6494,47 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___schema(ctx, field)
 			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var ruleImplementors = []string{"Rule"}
+
+func (ec *executionContext) _Rule(ctx context.Context, sel ast.SelectionSet, obj *model.Rule) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, ruleImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Rule")
+		case "id":
+			out.Values[i] = ec._Rule_id(ctx, field, obj)
+		case "rule":
+			out.Values[i] = ec._Rule_rule(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6429,6 +7164,11 @@ func (ec *executionContext) unmarshalNCreateGroupInput2sportsᚑdayᚋapiᚋgrap
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateRuleInput2sportsᚑdayᚋapiᚋgraphᚋmodelᚐCreateRuleInput(ctx context.Context, v any) (model.CreateRuleInput, error) {
+	res, err := ec.unmarshalInputCreateRuleInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateTeamInput2sportsᚑdayᚋapiᚋgraphᚋmodelᚐCreateTeamInput(ctx context.Context, v any) (model.CreateTeamInput, error) {
 	res, err := ec.unmarshalInputCreateTeamInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6549,6 +7289,58 @@ func (ec *executionContext) unmarshalNLoginInput2sportsᚑdayᚋapiᚋgraphᚋmo
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNRule2sportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx context.Context, sel ast.SelectionSet, v model.Rule) graphql.Marshaler {
+	return ec._Rule(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNRule2ᚕᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx context.Context, sel ast.SelectionSet, v []*model.Rule) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalORule2ᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNRule2ᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx context.Context, sel ast.SelectionSet, v *model.Rule) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Rule(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v any) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6629,6 +7421,11 @@ func (ec *executionContext) unmarshalNUpdateGroupInput2sportsᚑdayᚋapiᚋgrap
 
 func (ec *executionContext) unmarshalNUpdateGroupUsersInput2sportsᚑdayᚋapiᚋgraphᚋmodelᚐUpdateGroupUsersInput(ctx context.Context, v any) (model.UpdateGroupUsersInput, error) {
 	res, err := ec.unmarshalInputUpdateGroupUsersInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateRuleInput2sportsᚑdayᚋapiᚋgraphᚋmodelᚐUpdateRuleInput(ctx context.Context, v any) (model.UpdateRuleInput, error) {
+	res, err := ec.unmarshalInputUpdateRuleInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -6979,6 +7776,16 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
+func (ec *executionContext) unmarshalOID2string(ctx context.Context, v any) (string, error) {
+	res, err := graphql.UnmarshalID(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
+	res := graphql.MarshalID(v)
+	return res
+}
+
 func (ec *executionContext) unmarshalOID2ᚕstringᚄ(ctx context.Context, v any) ([]string, error) {
 	if v == nil {
 		return nil, nil
@@ -7015,6 +7822,13 @@ func (ec *executionContext) marshalOID2ᚕstringᚄ(ctx context.Context, sel ast
 	}
 
 	return ret
+}
+
+func (ec *executionContext) marshalORule2ᚖsportsᚑdayᚋapiᚋgraphᚋmodelᚐRule(ctx context.Context, sel ast.SelectionSet, v *model.Rule) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Rule(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v any) (*string, error) {

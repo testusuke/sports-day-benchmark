@@ -14,7 +14,7 @@ var (
 		Validation
 	*/
 	ErrSaveTeam       = NewError("TEAM_SAVE_FAILED", "チームの更新に失敗しました")
-	ErrAddTeamUser 	  = NewError("TEAM_USER_ADD_FAILED", "チームユーザーの追加に失敗しました")
+	ErrAddTeamUser    = NewError("TEAM_USER_ADD_FAILED", "チームユーザーの追加に失敗しました")
 	ErrDeleteTeamUser = NewError("TEAM_USER_REMOVE_FAILED", "チームユーザーの削除に失敗しました")
 	/*
 		Authentication

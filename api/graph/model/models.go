@@ -16,3 +16,8 @@ type Team struct {
 	Name    string `json:"name"`
 	GroupID string `json:"groupId"`
 }
+
+type Rule struct {
+	ID   string `json:"id"`
+	Rule string `json:"rule"`
+}

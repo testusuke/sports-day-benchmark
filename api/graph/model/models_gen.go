@@ -11,6 +11,10 @@ type CreateGroupInput struct {
 	Name string `json:"name"`
 }
 
+type CreateRuleInput struct {
+	Rule string `json:"rule"`
+}
+
 type CreateTeamInput struct {
 	Name    string   `json:"name"`
 	GroupID string   `json:"groupId"`
@@ -39,6 +43,10 @@ type UpdateGroupInput struct {
 
 type UpdateGroupUsersInput struct {
 	UserIds []string `json:"userIds"`
+}
+
+type UpdateRuleInput struct {
+	Rule *string `json:"rule,omitempty"`
 }
 
 type UpdateTeamInput struct {
