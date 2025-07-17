@@ -12,6 +12,7 @@ type Resolver struct {
 	GroupService    service.Group
 	TeamService     service.Team
 	LocationService service.Location
+	SportService    service.Sport
 }
 
 func NewResolver(
@@ -20,6 +21,7 @@ func NewResolver(
 	groupService service.Group,
 	teamService service.Team,
 	locationService service.Location,
+	sportService service.Sport,
 ) *Resolver {
 	return &Resolver{
 		UserService:     userService,
@@ -27,5 +29,6 @@ func NewResolver(
 		GroupService:    groupService,
 		TeamService:     teamService,
 		LocationService: locationService,
+		SportService:    sportService,
 	}
 }

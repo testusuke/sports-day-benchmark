@@ -73,6 +73,33 @@ func (r *mutationResolver) RemoveGroupUsers(ctx context.Context, id string, inpu
 	return model.FormatGroupResponse(group), nil
 }
 
+// CreateSports is the resolver for the createSports field.
+func (r *mutationResolver) CreateSports(ctx context.Context, input model.CreateSportsInput) (*model.Sport, error) {
+	sport, err := r.SportService.Create(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSportResponse(sport), nil
+}
+
+// DeleteSports is the resolver for the deleteSports field.
+func (r *mutationResolver) DeleteSports(ctx context.Context, id string) (*model.Sport, error) {
+	sport, err := r.SportService.Delete(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSportResponse(sport), nil
+}
+
+// UpdateSports is the resolver for the updateSports field.
+func (r *mutationResolver) UpdateSports(ctx context.Context, id string, input model.UpdateSportsInput) (*model.Sport, error) {
+	sport, err := r.SportService.Update(ctx, id, input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSportResponse(sport), nil
+}
+
 // CreateTeam is the resolver for the createTeam field.
 func (r *mutationResolver) CreateTeam(ctx context.Context, input model.CreateTeamInput) (*model.Team, error) {
 	team, err := r.TeamService.Create(ctx, &input)
@@ -198,6 +225,28 @@ func (r *queryResolver) Group(ctx context.Context, id string) (*model.Group, err
 		return nil, err
 	}
 	return model.FormatGroupResponse(group), nil
+}
+
+// Sports is the resolver for the sports field.
+func (r *queryResolver) Sports(ctx context.Context) ([]*model.Sport, error) {
+	sports, err := r.SportService.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]*model.Sport, 0, len(sports))
+	for _, sport := range sports {
+		res = append(res, model.FormatSportResponse(sport))
+	}
+	return res, nil
+}
+
+// Sport is the resolver for the sport field.
+func (r *queryResolver) Sport(ctx context.Context, id string) (*model.Sport, error) {
+	sport, err := r.SportService.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSportResponse(sport), nil
 }
 
 // Teams is the resolver for the teams field.

@@ -19,6 +19,14 @@ func FormatGroupResponse(group *db_model.Group) *Group {
 	}
 }
 
+func FormatSportResponse(sport *db_model.Sport) *Sport {
+	return &Sport{
+		ID:     sport.ID,
+		Name:   sport.Name,
+		Weight: int32(sport.Weight),
+	}
+}
+
 func FormatTeamResponse(team *db_model.Team) *Team {
 	return &Team{
 		ID:      team.ID,

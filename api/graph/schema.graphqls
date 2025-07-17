@@ -20,6 +20,15 @@ input UpdateGroupUsersInput {
   userIds: [ID!]!
 }
 
+input CreateSportsInput {
+  name: String!
+}
+
+input UpdateSportsInput {
+  name: String
+  weight: Int
+}
+
 input CreateTeamInput {
   name: String!
   groupId: String!
@@ -28,7 +37,7 @@ input CreateTeamInput {
 
 input UpdateTeamInput {
   name: String
-  groupId: String 
+  groupId: String
 }
 
 input UpdateTeamUsersInput {
@@ -44,14 +53,14 @@ input UpdateLocationInput {
   name: String
 }
 
-
-
 type Query {
   users: [User!]!
   user(id: ID!): User!
   me: User!
   groups: [Group!]!
   group(id: ID!): Group!
+  sports: [Sport!]!
+  sport(id: ID!): Sport!
   """
   チームをまとめて取得する
   """
@@ -78,6 +87,9 @@ type Mutation {
   updateGroup(id: ID!, input: UpdateGroupInput!): Group!
   addGroupUsers(id: ID!, input: UpdateGroupUsersInput!): Group!
   removeGroupUsers(id: ID!, input: UpdateGroupUsersInput!): Group!
+  createSports(input: CreateSportsInput!): Sport!
+  deleteSports(id: ID!): Sport!
+  updateSports(id: ID!, input: UpdateSportsInput!): Sport!
   """
   チームを作成する
   """

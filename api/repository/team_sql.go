@@ -83,7 +83,7 @@ func (r team) DeleteTeamUsers(ctx context.Context, db *gorm.DB, teamId string, u
 	if err := db.Where("team_id = ? AND user_id IN (?)", teamId, userIds).Find(&teamUsers).Error; err != nil {
 		return nil, errors.Wrap(err)
 	}
-	
+
 	if err := db.Where("team_id = ? AND user_id IN (?)", teamId, userIds).Delete(&db_model.TeamUser{}).Error; err != nil {
 		return nil, errors.Wrap(err)
 	}
