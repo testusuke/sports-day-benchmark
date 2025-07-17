@@ -75,6 +75,7 @@ func main() {
 	sportRepository := repository.NewSports()
 	teamRepository := repository.NewTeam()
 	locationRepository := repository.NewLocation()
+	sceneRepository := repository.NewScene()
 
 	// service
 	userService := service.NewUser(db, userRepository)
@@ -83,9 +84,10 @@ func main() {
 	sportService := service.NewSports(db, sportRepository)
 	teamService := service.NewTeam(db, teamRepository, userRepository)
 	locationService := service.NewLocation(db, locationRepository)
+	sceneService := service.NewScene(db, sceneRepository)
 
 	// graphql
-	config := graph.Config{Resolvers: graph.NewResolver(userService, authService, groupService, teamService, locationService, sportService)}
+	config := graph.Config{Resolvers: graph.NewResolver(userService, authService, groupService, teamService, locationService, sportService, sceneService)}
 	srv := handler.New(graph.NewExecutableSchema(config))
 
 	srv.AddTransport(transport.Options{})

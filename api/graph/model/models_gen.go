@@ -15,6 +15,10 @@ type CreateLocationInput struct {
 	Name string `json:"name"`
 }
 
+type CreateSceneInput struct {
+	Name string `json:"name"`
+}
+
 type CreateSportsInput struct {
 	Name string `json:"name"`
 }
@@ -46,6 +50,11 @@ type Mutation struct {
 type Query struct {
 }
 
+type Scene struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type Sport struct {
 	ID     string `json:"id"`
 	Name   string `json:"name"`
@@ -61,6 +70,10 @@ type UpdateGroupUsersInput struct {
 }
 
 type UpdateLocationInput struct {
+	Name *string `json:"name,omitempty"`
+}
+
+type UpdateSceneInput struct {
 	Name *string `json:"name,omitempty"`
 }
 

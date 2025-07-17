@@ -19,6 +19,13 @@ func FormatGroupResponse(group *db_model.Group) *Group {
 	}
 }
 
+func FormatSceneResponse(scene *db_model.Scene) *Scene {
+	return &Scene{
+		ID:   scene.ID,
+		Name: scene.Name,
+	}
+}
+
 func FormatSportResponse(sport *db_model.Sport) *Sport {
 	return &Sport{
 		ID:     sport.ID,

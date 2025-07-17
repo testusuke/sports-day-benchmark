@@ -11,6 +11,7 @@ var (
 	ErrTeamNotFound     = NewError("TEAM_NOT_FOUND", "チームが見つかりません")
 	ErrLocationNotFound = NewError("LOCATION_NOT_FOUND", "場所が見つかりません")
 	ErrSportNotFound    = NewError("SPORT_NOT_FOUND", "スポーツが見つかりません")
+	ErrSceneNotFound    = NewError("SCENE_NOT_FOUND", "シーンが見つかりません")
 
 	/*
 		Validation
@@ -20,6 +21,7 @@ var (
 	ErrDeleteTeamUser = NewError("TEAM_USER_REMOVE_FAILED", "チームユーザーの削除に失敗しました")
 	ErrSaveLocation   = NewError("LOCATION_SAVE_FAILED", "場所の更新に失敗しました")
 	ErrSaveSport      = NewError("SPORT_SAVE_FAILED", "スポーツの更新に失敗しました")
+	ErrSaveScene      = NewError("SCENE_SAVE_FAILED", "シーンの更新に失敗しました")
 	/*
 		Authentication
 	*/

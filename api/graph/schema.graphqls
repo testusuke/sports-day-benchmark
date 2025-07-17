@@ -20,6 +20,13 @@ input UpdateGroupUsersInput {
   userIds: [ID!]!
 }
 
+input CreateSceneInput {
+  name: String!
+}
+
+input UpdateSceneInput {
+  name: String
+}
 input CreateSportsInput {
   name: String!
 }
@@ -77,6 +84,8 @@ type Query {
   ID指定で場所を取得する
   """
   location(id: ID!): Location!
+  scenes: [Scene!]!
+  scene(id: ID!): Scene!
 }
 
 type Mutation {
@@ -118,4 +127,7 @@ type Mutation {
   場所を削除する
   """
   deleteLocation(id: ID!): Location!
+  createScene(input: CreateSceneInput!): Scene!
+  updateScene(id: ID!, input: UpdateSceneInput!): Scene!
+  deleteScene(id: ID!): Scene!
 }

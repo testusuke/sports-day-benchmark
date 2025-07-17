@@ -172,6 +172,33 @@ func (r *mutationResolver) DeleteLocation(ctx context.Context, id string) (*mode
 	return model.FormatLocationResponse(location), nil
 }
 
+// CreateScene is the resolver for the createScene field.
+func (r *mutationResolver) CreateScene(ctx context.Context, input model.CreateSceneInput) (*model.Scene, error) {
+	scene, err := r.SceneService.Create(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSceneResponse(scene), nil
+}
+
+// UpdateScene is the resolver for the updateScene field.
+func (r *mutationResolver) UpdateScene(ctx context.Context, id string, input model.UpdateSceneInput) (*model.Scene, error) {
+	scene, err := r.SceneService.Update(ctx, id, &input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSceneResponse(scene), nil
+}
+
+// DeleteScene is the resolver for the deleteScene field.
+func (r *mutationResolver) DeleteScene(ctx context.Context, id string) (*model.Scene, error) {
+	scene, err := r.SceneService.Delete(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSceneResponse(scene), nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	users, err := r.UserService.List(ctx)
@@ -293,6 +320,29 @@ func (r *queryResolver) Location(ctx context.Context, id string) (*model.Locatio
 		return nil, err
 	}
 	return model.FormatLocationResponse(location), nil
+}
+
+// Scenes is the resolver for the scenes field.
+func (r *queryResolver) Scenes(ctx context.Context) ([]*model.Scene, error) {
+	scenes, err := r.SceneService.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*model.Scene, 0, len(scenes))
+	for _, scene := range scenes {
+		res = append(res, model.FormatSceneResponse(scene))
+	}
+	return res, nil
+}
+
+// Scene is the resolver for the scene field.
+func (r *queryResolver) Scene(ctx context.Context, id string) (*model.Scene, error) {
+	scene, err := r.SceneService.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatSceneResponse(scene), nil
 }
 
 // Mutation returns MutationResolver implementation.

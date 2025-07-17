@@ -35,3 +35,8 @@ type Sport {
   name: String!
   weight: Int!
 }
+
+type Scene {
+  id: ID!
+  name: String!
+}
