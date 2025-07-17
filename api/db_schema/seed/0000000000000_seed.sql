@@ -4,6 +4,7 @@ DELETE FROM teams;
 DELETE FROM group_users;
 DELETE FROM `groups`;
 DELETE FROM users;
+DELETE FROM information;
 DELETE FROM scenes;
 DELETE FROM locations;
 DELETE FROM `sports`;
@@ -114,6 +115,11 @@ VALUES
         ('01JS96Z9643QY5BATRYY2C02DQ', '01JS96Z963QE7DYBQ6Q7BH95S8'),
         ('01JS96Z964KX2GGT92CSMVEJ5X', '01JS96Z963QE7DYBQ6Q7BH95S8'),
         ('01JS96Z964EZHVVXQJ0T0ETKAW', '01JS96Z963QE7DYBQ6Q7BH95S8');
+
+INSERT INTO information (id, title, content)
+VALUES
+        ('01JS96Z964TC50FZW2MSXZWWXK', 'サッカー会場の変更のお知らせ', '本日のサッカーの会場は雨により、グラウンドから体育館に変更されます'),
+        ('01JS96Z964P79JWGCNQX95ZBRN', 'SPORTSDAYアプリのアンケートのお知らせ', '会場にあるポスターのQRコードからアンケートへのご協力よろしくお願いいたします');
 
 INSERT INTO scenes (id, name)
 VALUES  ('01JZSY6HF3AYEXVCT4WJ2YBYA7', '晴天時'),
@@ -238,6 +244,7 @@ DELETE FROM teams;
 DELETE FROM group_users;
 DELETE FROM `groups`;
 DELETE FROM users;
+DELETE FROM information;
 DELETE FROM scenes;
 DELETE FROM `sports`;
 DELETE FROM locations;

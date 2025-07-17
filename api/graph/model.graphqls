@@ -30,6 +30,12 @@ type AuthResponse {
   user: User!
 }
 
+type Information {
+  id: ID!
+  title: String!
+  content: String!
+}
+
 type Sport {
   id: ID!
   name: String!

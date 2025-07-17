@@ -199,6 +199,33 @@ func (r *mutationResolver) DeleteScene(ctx context.Context, id string) (*model.S
 	return model.FormatSceneResponse(scene), nil
 }
 
+// CreateInformation is the resolver for the createInformation field.
+func (r *mutationResolver) CreateInformation(ctx context.Context, input model.CreateInformationInput) (*model.Information, error) {
+	information, err := r.InformationService.Create(ctx, &input)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatInformationResponse(information), nil
+}
+
+// DeleteInformation is the resolver for the deleteInformation field.
+func (r *mutationResolver) DeleteInformation(ctx context.Context, id string) (*model.Information, error) {
+	information, err := r.InformationService.Delete(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatInformationResponse(information), nil
+}
+
+// UpdateInformation is the resolver for the updateInformation field.
+func (r *mutationResolver) UpdateInformation(ctx context.Context, id string, input model.UpdateInformationInput) (*model.Information, error) {
+	information, err := r.InformationService.Update(ctx, input, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatInformationResponse(information), nil
+}
+
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	users, err := r.UserService.List(ctx)
@@ -343,6 +370,29 @@ func (r *queryResolver) Scene(ctx context.Context, id string) (*model.Scene, err
 		return nil, err
 	}
 	return model.FormatSceneResponse(scene), nil
+}
+
+// Informations is the resolver for the Informations field.
+func (r *queryResolver) Informations(ctx context.Context) ([]*model.Information, error) {
+	informations, err := r.InformationService.GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]*model.Information, 0, len(informations))
+	for _, information := range informations {
+		res = append(res, model.FormatInformationResponse(information))
+	}
+	return res, nil
+}
+
+// Information is the resolver for the Information field.
+func (r *queryResolver) Information(ctx context.Context, id string) (*model.Information, error) {
+	information, err := r.InformationService.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatInformationResponse(information), nil
 }
 
 // Mutation returns MutationResolver implementation.

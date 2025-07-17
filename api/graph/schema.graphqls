@@ -20,6 +20,16 @@ input UpdateGroupUsersInput {
   userIds: [ID!]!
 }
 
+input CreateInformationInput {
+  title: String!
+  content: String!
+}
+
+input UpdateInformationInput {
+  title: String
+  content: String
+}
+
 input CreateSceneInput {
   name: String!
 }
@@ -86,6 +96,8 @@ type Query {
   location(id: ID!): Location!
   scenes: [Scene!]!
   scene(id: ID!): Scene!
+  Informations: [Information!]!
+  Information(id: ID!): Information!
 }
 
 type Mutation {
@@ -130,4 +142,7 @@ type Mutation {
   createScene(input: CreateSceneInput!): Scene!
   updateScene(id: ID!, input: UpdateSceneInput!): Scene!
   deleteScene(id: ID!): Scene!
+  createInformation(input: CreateInformationInput!): Information!
+  deleteInformation(id: ID!): Information!
+  updateInformation(id: ID!, input: UpdateInformationInput!): Information!
 }
