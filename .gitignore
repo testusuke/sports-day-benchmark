@@ -47,7 +47,7 @@ api/db_schema/schema.sql
 # .vscode
 .vscode
 
-# cursor
+# Cursor
 .cursorignore
 .cursor/rules/*.mdc
 !.cursor/rules/shared-*.mdc
@@ -56,3 +56,5 @@ api/db_schema/schema.sql
 .clinerules
 /memory-bank/
 
+# docs
+docs/
