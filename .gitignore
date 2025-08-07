@@ -47,8 +47,12 @@ api/db_schema/schema.sql
 # .vscode
 .vscode
 
+# cursor
 .cursorignore
+.cursor/rules/*.mdc
+!.cursor/rules/shared-*.mdc
 
 # cline
 .clinerules
 /memory-bank/
+
