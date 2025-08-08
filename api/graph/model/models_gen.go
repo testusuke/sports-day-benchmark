@@ -2,9 +2,20 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type AuthResponse struct {
 	Token string `json:"token"`
 	User  *User  `json:"user"`
+}
+
+type CreateCompetitionInput struct {
+	Name string          `json:"name"`
+	Type CompetitionType `json:"type"`
 }
 
 type CreateGroupInput struct {
@@ -18,6 +29,15 @@ type CreateInformationInput struct {
 
 type CreateLocationInput struct {
 	Name string `json:"name"`
+}
+
+type CreateMatchInput struct {
+	Time          string         `json:"time"`
+	Status        MatchStatus    `json:"status"`
+	LocationID    string         `json:"locationId"`
+	CompetitionID string         `json:"competitionId"`
+	TeamIds       []string       `json:"teamIds,omitempty"`
+	Judgment      *JudgmentEntry `json:"judgment,omitempty"`
 }
 
 type CreateSceneInput struct {
@@ -45,14 +65,29 @@ type Information struct {
 	Content string `json:"content"`
 }
 
-type Location struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+// 3 つの ID のうち **ちょうど 1 つだけ** を非 NULL にしてください。
+// 1 つも指定しない、または 2 つ以上同時に指定した場合、サーバーは BAD_REQUEST を返します。
+type JudgmentEntry struct {
+	Name    *string `json:"name,omitempty"`
+	UserID  *string `json:"userId,omitempty"`
+	TeamID  *string `json:"teamId,omitempty"`
+	GroupID *string `json:"groupId,omitempty"`
 }
 
 type LoginInput struct {
 	Code        string `json:"code"`
 	RedirectURL string `json:"redirectURL"`
+}
+
+type MatchEntry struct {
+	ID    string `json:"id"`
+	Team  *Team  `json:"team,omitempty"`
+	Score int32  `json:"score"`
+}
+
+type MatchResultInput struct {
+	TeamID string `json:"teamId"`
+	Score  int32  `json:"score"`
 }
 
 type Mutation struct {
@@ -72,6 +107,15 @@ type Sport struct {
 	Weight int32  `json:"weight"`
 }
 
+type UpdateCompetitionEntriesInput struct {
+	TeamIds []string `json:"teamIds"`
+}
+
+type UpdateCompetitionInput struct {
+	Name *string          `json:"name,omitempty"`
+	Type *CompetitionType `json:"type,omitempty"`
+}
+
 type UpdateGroupInput struct {
 	Name *string `json:"name,omitempty"`
 }
@@ -85,8 +129,32 @@ type UpdateInformationInput struct {
 	Content *string `json:"content,omitempty"`
 }
 
+type UpdateJudgmentInput struct {
+	Entry *JudgmentEntry `json:"entry,omitempty"`
+}
+
 type UpdateLocationInput struct {
 	Name *string `json:"name,omitempty"`
+}
+
+type UpdateMatchDetailInput struct {
+	Time       *string `json:"time,omitempty"`
+	LocationID *string `json:"locationId,omitempty"`
+}
+
+type UpdateMatchEntriesInput struct {
+	TeamIds []string `json:"teamIds"`
+}
+
+type UpdateMatchEntryScoreInput struct {
+	TeamID string `json:"teamId"`
+	Score  int32  `json:"score"`
+}
+
+type UpdateMatchResultInput struct {
+	Status       *MatchStatus        `json:"status,omitempty"`
+	WinnerTeamID *string             `json:"winnerTeamId,omitempty"`
+	Results      []*MatchResultInput `json:"results,omitempty"`
 }
 
 type UpdateSceneInput struct {
@@ -106,4 +174,90 @@ type UpdateTeamInput struct {
 type UpdateTeamUsersInput struct {
 	AddUserIds    []string `json:"addUserIds,omitempty"`
 	RemoveUserIds []string `json:"removeUserIds,omitempty"`
+}
+
+type CompetitionType string
+
+const (
+	CompetitionTypeLeague     CompetitionType = "LEAGUE"
+	CompetitionTypeTournament CompetitionType = "TOURNAMENT"
+)
+
+var AllCompetitionType = []CompetitionType{
+	CompetitionTypeLeague,
+	CompetitionTypeTournament,
+}
+
+func (e CompetitionType) IsValid() bool {
+	switch e {
+	case CompetitionTypeLeague, CompetitionTypeTournament:
+		return true
+	}
+	return false
+}
+
+func (e CompetitionType) String() string {
+	return string(e)
+}
+
+func (e *CompetitionType) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CompetitionType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CompetitionType", str)
+	}
+	return nil
+}
+
+func (e CompetitionType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type MatchStatus string
+
+const (
+	MatchStatusCanceled MatchStatus = "CANCELED"
+	MatchStatusStandby  MatchStatus = "STANDBY"
+	MatchStatusOngoing  MatchStatus = "ONGOING"
+	MatchStatusFinished MatchStatus = "FINISHED"
+)
+
+var AllMatchStatus = []MatchStatus{
+	MatchStatusCanceled,
+	MatchStatusStandby,
+	MatchStatusOngoing,
+	MatchStatusFinished,
+}
+
+func (e MatchStatus) IsValid() bool {
+	switch e {
+	case MatchStatusCanceled, MatchStatusStandby, MatchStatusOngoing, MatchStatusFinished:
+		return true
+	}
+	return false
+}
+
+func (e MatchStatus) String() string {
+	return string(e)
+}
+
+func (e *MatchStatus) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = MatchStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid MatchStatus", str)
+	}
+	return nil
+}
+
+func (e MatchStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

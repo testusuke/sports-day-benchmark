@@ -4,6 +4,7 @@ type User {
   email: String!
   groups: [Group!]!
   teams: [Team!]!
+  judgments: [Judgment!]!
 }
 
 type Group {
@@ -11,6 +12,7 @@ type Group {
   name: String!
   teams: [Team!]!
   users: [User!]!
+  judgments: [Judgment!]!
 }
 
 type Team {
@@ -18,11 +20,60 @@ type Team {
   name: String!
   group: Group!
   users: [User!]!
+  competitions: [Competition!]!
+  matches: [Match!]!
+  judgments: [Judgment!]!
+}
+
+enum CompetitionType {
+  LEAGUE
+  TOURNAMENT
+}
+
+type Competition {
+  id: ID!
+  name: String!
+  type: CompetitionType!
+  teams: [Team!]!
+  matches: [Match!]!
 }
 
 type Location {
   id: ID!
   name: String!
+  matches: [Match!]!
+}
+
+enum MatchStatus {
+  CANCELED
+  STANDBY
+  ONGOING
+  FINISHED
+}
+
+type MatchEntry {
+  id: ID!
+  team: Team
+  score: Int!
+}
+
+type Match {
+  id: ID!
+  time: String!
+  status: MatchStatus!
+  location: Location!
+  competition: Competition!
+  winnerTeam: Team
+  entries: [MatchEntry!]!
+  judgment: Judgment
+}
+
+type Judgment {
+  id: ID!
+  name: String
+  user: User
+  team: Team
+  group: Group
 }
 
 type AuthResponse {

@@ -48,13 +48,13 @@ input UpdateSportsInput {
 
 input CreateTeamInput {
   name: String!
-  groupId: String!
+  groupId: ID!
   userIds: [ID!]!
 }
 
 input UpdateTeamInput {
   name: String
-  groupId: String
+  groupId: ID
 }
 
 input UpdateTeamUsersInput {
@@ -68,6 +68,69 @@ input CreateLocationInput {
 
 input UpdateLocationInput {
   name: String
+}
+
+input CreateCompetitionInput {
+  name: String!
+  type: CompetitionType!
+}
+
+input UpdateCompetitionInput {
+  name: String
+  type: CompetitionType
+}
+
+input UpdateCompetitionEntriesInput {
+  teamIds: [ID!]!
+}
+
+input MatchResultInput {
+  teamId: ID!
+  score: Int!
+}
+
+input CreateMatchInput {
+  time: String!
+  status: MatchStatus!
+  locationId: ID!
+  competitionId: ID!
+  teamIds: [ID!]
+  judgment: JudgmentEntry
+}
+
+input UpdateMatchDetailInput {
+  time: String
+  locationId: ID
+}
+
+input UpdateMatchResultInput {
+  status: MatchStatus
+  winnerTeamId: ID
+  results: [MatchResultInput!]
+}
+
+input UpdateMatchEntriesInput {
+  teamIds: [ID!]!
+}
+
+input UpdateMatchEntryScoreInput {
+  teamId: ID!
+  score: Int!
+}
+
+"""
+3 つの ID のうち **ちょうど 1 つだけ** を非 NULL にしてください。  
+1 つも指定しない、または 2 つ以上同時に指定した場合、サーバーは BAD_REQUEST を返します。
+"""
+input JudgmentEntry {
+  name: String
+	userId: ID
+	teamId: ID
+	groupId: ID 
+}
+
+input UpdateJudgmentInput {
+	entry: JudgmentEntry
 }
 
 type Query {
@@ -98,6 +161,30 @@ type Query {
   scene(id: ID!): Scene!
   Informations: [Information!]!
   Information(id: ID!): Information!
+  """
+  大会をまとめて取得する
+  """
+  competitions: [Competition!]!
+  """
+  ID指定で大会を取得する
+  """
+  competition(id: ID!): Competition!
+  """
+  試合をまとめて取得する
+  """
+  matches: [Match!]!
+  """
+  ID指定で試合を取得する
+  """
+  match(id: ID!): Match!
+  """
+  審判をまとめて取得する
+  """
+  judgments: [Judgment!]!
+  """
+  ID指定で試合を取得する
+  """
+	judgment(id: ID!): Judgment!
 }
 
 type Mutation {
@@ -145,4 +232,52 @@ type Mutation {
   createInformation(input: CreateInformationInput!): Information!
   deleteInformation(id: ID!): Information!
   updateInformation(id: ID!, input: UpdateInformationInput!): Information!
+  """
+  大会を作成する
+  """
+  createCompetition(input: CreateCompetitionInput!): Competition!
+  """
+  大会の情報を更新する
+  """
+  updateCompetition(id: ID!, input: UpdateCompetitionInput!): Competition!
+  """
+  大会を削除する
+  """
+  deleteCompetition(id: ID!): Competition!
+  """
+  大会にチームエントリーを追加する
+  """
+  addCompetitionEntries(id: ID!, input: UpdateCompetitionEntriesInput!): Competition!
+  """
+  大会からチームエントリーを削除する
+  """
+  deleteCompetitionEntries(id: ID!, input: UpdateCompetitionEntriesInput!): Competition!
+  """
+  試合を作成する
+  """
+  createMatch(input: CreateMatchInput!): Match!
+  """
+  試合の詳細情報を更新する
+  """
+  updateMatchDetail(id: ID!, input: UpdateMatchDetailInput!): Match!
+  """
+  試合結果を更新する
+  """
+  updateMatchResult(id: ID!, input: UpdateMatchResultInput!): Match!
+  """
+  試合を削除する
+  """
+  deleteMatch(id: ID!): Match!
+  """
+  試合にチームエントリーを追加する
+  """
+  addMatchEntries(id: ID!, input: UpdateMatchEntriesInput!): Match!
+  """
+  試合からチームエントリーを削除する
+  """
+  deleteMatchEntries(id: ID!, input: UpdateMatchEntriesInput!): Match!
+  """
+  審判の情報を更新する
+  """
+	updateJudgment(id: ID!, input: UpdateJudgmentInput!): Judgment!
 }

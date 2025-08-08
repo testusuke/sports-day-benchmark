@@ -1,6 +1,8 @@
 package model
 
 import (
+	"time"
+
 	"sports-day/api/db_model"
 )
 
@@ -54,5 +56,41 @@ func FormatLocationResponse(location *db_model.Location) *Location {
 	return &Location{
 		ID:   location.ID,
 		Name: location.Name,
+	}
+}
+
+func FormatCompetitionResponse(competition *db_model.Competition) *Competition {
+	return &Competition{
+		ID:   competition.ID,
+		Name: competition.Name,
+		Type: CompetitionType(competition.Type),
+	}
+}
+
+func FormatMatchResponse(match *db_model.Match) *Match {
+	return &Match{
+		ID:            match.ID,
+		Time:          match.Time.Format(time.RFC3339),
+		Status:        MatchStatus(match.Status),
+		LocationId:    match.LocationID,
+		CompetitionId: match.CompetitionID,
+		WinnerTeamId:  match.WinnerTeamID.String,
+	}
+}
+
+func FormatMatchEntryResponse(entry *db_model.MatchEntry) *MatchEntry {
+	return &MatchEntry{
+		ID:    entry.ID,
+		Score: int32(entry.Score),
+	}
+}
+
+func FormatJudgmentResponse(judgment *db_model.Judgment) *Judgment {
+	return &Judgment{
+		ID:      judgment.ID,
+		Name:    judgment.Name.String,
+		UserId:  judgment.UserID.String,
+		TeamId:  judgment.TeamID.String,
+		GroupId: judgment.GroupID.String,
 	}
 }

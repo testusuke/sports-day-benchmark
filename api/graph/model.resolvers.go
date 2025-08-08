@@ -14,6 +14,35 @@ import (
 )
 
 // Teams is the resolver for the teams field.
+func (r *competitionResolver) Teams(ctx context.Context, obj *model.Competition) ([]*model.Team, error) {
+	competitionEntries, err := loader.LoadCompetitionEntries(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	teamIds := slices.Map(competitionEntries, func(competitionEntry *db_model.CompetitionEntry) string {
+		return competitionEntry.TeamID
+	})
+	teams, err := loader.LoadTeams(ctx, teamIds)
+	if err != nil {
+		return nil, err
+	}
+	return slices.Map(teams, func(team *db_model.Team) *model.Team {
+		return model.FormatTeamResponse(team)
+	}), nil
+}
+
+// Matches is the resolver for the matches field.
+func (r *competitionResolver) Matches(ctx context.Context, obj *model.Competition) ([]*model.Match, error) {
+	matches, err := loader.LoadCompetitionMatches(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return slices.Map(matches, func(match *db_model.Match) *model.Match {
+		return model.FormatMatchResponse(match)
+	}), nil
+}
+
+// Teams is the resolver for the teams field.
 func (r *groupResolver) Teams(ctx context.Context, obj *model.Group) ([]*model.Team, error) {
 	groupTeams, err := loader.LoadGroupTeams(ctx, obj.ID)
 	if err != nil {
@@ -49,6 +78,161 @@ func (r *groupResolver) Users(ctx context.Context, obj *model.Group) ([]*model.U
 	}), nil
 }
 
+// Judgments is the resolver for the judgments field.
+func (r *groupResolver) Judgments(ctx context.Context, obj *model.Group) ([]*model.Judgment, error) {
+	judgments, err := loader.LoadGroupJudgments(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return slices.Map(judgments, func(judgment *db_model.Judgment) *model.Judgment {
+		return model.FormatJudgmentResponse(judgment)
+	}), nil
+}
+
+// User is the resolver for the user field.
+func (r *judgmentResolver) User(ctx context.Context, obj *model.Judgment) (*model.User, error) {
+	if obj.UserId == "" {
+		return nil, nil
+	}
+	users, err := loader.LoadUsers(ctx, []string{obj.UserId})
+	if err != nil {
+		return nil, err
+	}
+	if len(users) == 0 || users[0] == nil {
+		return nil, nil
+	}
+	return model.FormatUserResponse(users[0]), nil
+}
+
+// Team is the resolver for the team field.
+func (r *judgmentResolver) Team(ctx context.Context, obj *model.Judgment) (*model.Team, error) {
+	if obj.TeamId == "" {
+		return nil, nil
+	}
+	teams, err := loader.LoadTeams(ctx, []string{obj.TeamId})
+	if err != nil {
+		return nil, err
+	}
+	if len(teams) == 0 || teams[0] == nil {
+		return nil, nil
+	}
+	return model.FormatTeamResponse(teams[0]), nil
+}
+
+// Group is the resolver for the group field.
+func (r *judgmentResolver) Group(ctx context.Context, obj *model.Judgment) (*model.Group, error) {
+	if obj.GroupId == "" {
+		return nil, nil
+	}
+	groups, err := loader.LoadGroups(ctx, []string{obj.GroupId})
+	if err != nil {
+		return nil, err
+	}
+	if len(groups) == 0 || groups[0] == nil {
+		return nil, nil
+	}
+	return model.FormatGroupResponse(groups[0]), nil
+}
+
+// Matches is the resolver for the matches field.
+func (r *locationResolver) Matches(ctx context.Context, obj *model.Location) ([]*model.Match, error) {
+	matches, err := loader.LoadLocationMatches(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	return slices.Map(matches, func(match *db_model.Match) *model.Match {
+		return model.FormatMatchResponse(match)
+	}), nil
+}
+
+// Location is the resolver for the location field.
+func (r *matchResolver) Location(ctx context.Context, obj *model.Match) (*model.Location, error) {
+	locations, err := loader.LoadLocations(ctx, []string{obj.LocationId})
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatLocationResponse(locations[0]), nil
+}
+
+// Competition is the resolver for the competition field.
+func (r *matchResolver) Competition(ctx context.Context, obj *model.Match) (*model.Competition, error) {
+	competitions, err := loader.LoadCompetitions(ctx, []string{obj.CompetitionId})
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatCompetitionResponse(competitions[0]), nil
+}
+
+// WinnerTeam is the resolver for the winner_team field.
+func (r *matchResolver) WinnerTeam(ctx context.Context, obj *model.Match) (*model.Team, error) {
+	if obj.WinnerTeamId == "" {
+		return nil, nil
+	}
+	teams, err := loader.LoadTeams(ctx, []string{obj.WinnerTeamId})
+	if err != nil {
+		return nil, err
+	}
+	return model.FormatTeamResponse(teams[0]), nil
+}
+
+// Entries is the resolver for the entries field.
+func (r *matchResolver) Entries(ctx context.Context, obj *model.Match) ([]*model.MatchEntry, error) {
+	entries, err := loader.LoadMatchEntries(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	// TeamIDが有効なエントリーのみを抽出してチーム情報を取得
+	var validTeamIDs []string
+	for _, entry := range entries {
+		if entry.TeamID.Valid {
+			validTeamIDs = append(validTeamIDs, entry.TeamID.String)
+		}
+	}
+
+	var teams []*db_model.Team
+	if len(validTeamIDs) > 0 {
+		teams, err = loader.LoadTeams(ctx, validTeamIDs)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// チームIDをキーとするマップを作成
+	teamMap := make(map[string]*db_model.Team)
+	for _, team := range teams {
+		teamMap[team.ID] = team
+	}
+
+	var res []*model.MatchEntry
+	for _, entry := range entries {
+		matchEntry := &model.MatchEntry{
+			ID:    entry.ID,
+			Score: int32(entry.Score),
+		}
+
+		// TeamIDが有効な場合のみTeamを設定
+		if entry.TeamID.Valid {
+			if team, exists := teamMap[entry.TeamID.String]; exists {
+				matchEntry.Team = model.FormatTeamResponse(team)
+			}
+		}
+
+		res = append(res, matchEntry)
+	}
+	return res, nil
+}
+
+// Judgment is the resolver for the judgment field.
+func (r *matchResolver) Judgment(ctx context.Context, obj *model.Match) (*model.Judgment, error) {
+	judgments, err := loader.LoadJudgments(ctx, []string{obj.ID})
+	if err != nil {
+		return nil, err
+	}
+
+	return model.FormatJudgmentResponse(judgments[0]), nil
+}
+
 // Group is the resolver for the group field.
 func (r *teamResolver) Group(ctx context.Context, obj *model.Team) (*model.Group, error) {
 	groups, err := loader.LoadGroups(ctx, []string{obj.GroupID})
@@ -73,6 +257,54 @@ func (r *teamResolver) Users(ctx context.Context, obj *model.Team) ([]*model.Use
 	}
 	return slices.Map(users, func(user *db_model.User) *model.User {
 		return model.FormatUserResponse(user)
+	}), nil
+}
+
+// Competitions is the resolver for the competitions field.
+func (r *teamResolver) Competitions(ctx context.Context, obj *model.Team) ([]*model.Competition, error) {
+	competitionEntries, err := loader.LoadEntryCompetitions(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	competitionIds := slices.Map(competitionEntries, func(competitionEntry *db_model.CompetitionEntry) string {
+		return competitionEntry.CompetitionID
+	})
+	competitions, err := loader.LoadCompetitions(ctx, competitionIds)
+	if err != nil {
+		return nil, err
+	}
+	return slices.Map(competitions, func(competition *db_model.Competition) *model.Competition {
+		return model.FormatCompetitionResponse(competition)
+	}), nil
+}
+
+// Matches is the resolver for the matches field.
+func (r *teamResolver) Matches(ctx context.Context, obj *model.Team) ([]*model.Match, error) {
+	matchEntries, err := loader.LoadEntryMatches(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+	matchIds := slices.Map(matchEntries, func(matchEntry *db_model.MatchEntry) string {
+		return matchEntry.MatchID
+	})
+	matches, err := loader.LoadMatches(ctx, matchIds)
+	if err != nil {
+		return nil, err
+	}
+	return slices.Map(matches, func(match *db_model.Match) *model.Match {
+		return model.FormatMatchResponse(match)
+	}), nil
+}
+
+// Judgments is the resolver for the judgments field.
+func (r *teamResolver) Judgments(ctx context.Context, obj *model.Team) ([]*model.Judgment, error) {
+	judgments, err := loader.LoadTeamJudgments(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return slices.Map(judgments, func(judgment *db_model.Judgment) *model.Judgment {
+		return model.FormatJudgmentResponse(judgment)
 	}), nil
 }
 
@@ -112,8 +344,32 @@ func (r *userResolver) Teams(ctx context.Context, obj *model.User) ([]*model.Tea
 	}), nil
 }
 
+// Judgments is the resolver for the judgments field.
+func (r *userResolver) Judgments(ctx context.Context, obj *model.User) ([]*model.Judgment, error) {
+	judgments, err := loader.LoadUserJudgments(ctx, obj.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return slices.Map(judgments, func(judgment *db_model.Judgment) *model.Judgment {
+		return model.FormatJudgmentResponse(judgment)
+	}), nil
+}
+
+// Competition returns CompetitionResolver implementation.
+func (r *Resolver) Competition() CompetitionResolver { return &competitionResolver{r} }
+
 // Group returns GroupResolver implementation.
 func (r *Resolver) Group() GroupResolver { return &groupResolver{r} }
+
+// Judgment returns JudgmentResolver implementation.
+func (r *Resolver) Judgment() JudgmentResolver { return &judgmentResolver{r} }
+
+// Location returns LocationResolver implementation.
+func (r *Resolver) Location() LocationResolver { return &locationResolver{r} }
+
+// Match returns MatchResolver implementation.
+func (r *Resolver) Match() MatchResolver { return &matchResolver{r} }
 
 // Team returns TeamResolver implementation.
 func (r *Resolver) Team() TeamResolver { return &teamResolver{r} }
@@ -121,6 +377,10 @@ func (r *Resolver) Team() TeamResolver { return &teamResolver{r} }
 // User returns UserResolver implementation.
 func (r *Resolver) User() UserResolver { return &userResolver{r} }
 
+type competitionResolver struct{ *Resolver }
 type groupResolver struct{ *Resolver }
+type judgmentResolver struct{ *Resolver }
+type locationResolver struct{ *Resolver }
+type matchResolver struct{ *Resolver }
 type teamResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
