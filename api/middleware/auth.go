@@ -11,15 +11,13 @@ func Auth(jwt *auth.JWT) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenString, err := auth.GetTokenFromRequest(r)
 			if err != nil {
-				//	TODO unauthorized
-				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				next.ServeHTTP(w, r)
 				return
 			}
 
 			tokenData, err := jwt.Validate(tokenString)
 			if err != nil {
-				//	TODO unauthorized
-				http.Error(w, "unauthorized", http.StatusUnauthorized)
+				http.Error(w, "token is invalid or expired", http.StatusUnauthorized)
 				return
 			}
 

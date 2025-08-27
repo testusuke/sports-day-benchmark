@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"sports-day/api/pkg/errors"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
@@ -18,11 +19,10 @@ type OIDC struct {
 	configs  map[string]*oauth2.Config
 }
 
-func NewOIDC(ctx context.Context, issuerURL string, clientID string, clientSecret string, redirectURLs []string) (OIDC, error) {
+func NewOIDC(ctx context.Context, issuerURL string, clientID string, clientSecret string, redirectURLs []string, scopes []string) (OIDC, error) {
 	provider, err := oidc.NewProvider(ctx, issuerURL)
 	if err != nil {
-		//	TODO replace error
-		return OIDC{}, err
+		return OIDC{}, errors.Wrap(err)
 	}
 
 	configs := make(map[string]*oauth2.Config, len(redirectURLs))
@@ -32,7 +32,7 @@ func NewOIDC(ctx context.Context, issuerURL string, clientID string, clientSecre
 			ClientSecret: clientSecret,
 			Endpoint:     provider.Endpoint(),
 			RedirectURL:  redirectURL,
-			Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
+			Scopes:       scopes,
 		}
 	}
 
@@ -47,26 +47,22 @@ func NewOIDC(ctx context.Context, issuerURL string, clientID string, clientSecre
 func (o *OIDC) Authenticate(ctx context.Context, code string, redirectURL string) (*OIDCTokenData, error) {
 	config, ok := o.configs[redirectURL]
 	if !ok {
-		//	TODO replace error
-		return nil, fmt.Errorf("redirectURL not found in configs")
+		return nil, errors.Wrap(fmt.Errorf("redirectURL not found in configs"))
 	}
 
 	token, err := config.Exchange(ctx, code)
 	if err != nil {
-		//	TODO replace error
-		return nil, err
+		return nil, errors.Wrap(err)
 	}
 
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
-		//	TODO replace error
-		return nil, fmt.Errorf("id_token not found in token response")
+		return nil, errors.Wrap(fmt.Errorf("id_token not found in token response"))
 	}
 
 	idToken, err := o.verifier.Verify(ctx, rawIDToken)
 	if err != nil {
-		//	TODO replace error
-		return nil, err
+		return nil, errors.Wrap(err)
 	}
 
 	var claims struct {
@@ -74,8 +70,7 @@ func (o *OIDC) Authenticate(ctx context.Context, code string, redirectURL string
 		Name  string `json:"name"`
 	}
 	if err := idToken.Claims(&claims); err != nil {
-		//	TODO replace error
-		return nil, err
+		return nil, errors.Wrap(err)
 	}
 
 	return &OIDCTokenData{

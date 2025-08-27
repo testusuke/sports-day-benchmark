@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { gql } from "@/gql/__generated__";
-import { makeApolloClient } from "@/components/ApolloProvider";
+import { makeApolloClient } from "@/util/ApolloClient";
+import { cookies } from "next/headers";
 
 const query = gql(`
   mutation Login($code: String!, $redirect_uri: String!) {
@@ -17,7 +18,6 @@ export async function POST(request: NextRequest) {
   const code = form.get("code");
   //  redirect uri
   const redirectUri = process.env.NEXT_PUBLIC_OIDC_REDIRECT_URL;
-
   //  post code to the backend using fetch
   const client = makeApolloClient();
   const { data, errors } = await client.mutate({
@@ -27,8 +27,6 @@ export async function POST(request: NextRequest) {
       redirect_uri: redirectUri as string,
     },
   });
-
-  console.log(data, errors);
 
   if (errors) {
     return new Response(null, {
@@ -40,18 +38,18 @@ export async function POST(request: NextRequest) {
   }
 
   //  get cookie from response
-  const cookie = data?.login.token;
+  const token = data?.login.token;
   const subDirectory = process.env.SUB_DIRECTORY
     ? process.env.SUB_DIRECTORY
     : "/";
-  if (cookie) {
-    // redirect to root page
-    return new Response(null, {
-      status: 301,
-      headers: {
-        Location: subDirectory,
-        "Set-Cookie": cookie,
-      },
+
+  if (token) {
+    //  set cookie
+    cookies().set("access_token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 3600,
     });
   }
 

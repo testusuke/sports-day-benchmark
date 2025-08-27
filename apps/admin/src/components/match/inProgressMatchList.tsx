@@ -1,8 +1,9 @@
-import {gameFactory} from "@/src/models/GameModel"
-import {Match, matchFactory} from "@/src/models/MatchModel"
-import MatchList from "@/components/match/matchList"
+// import {gameFactory} from "@/src/models/GameModel"
+// import {Match, matchFactory} from "@/src/models/MatchModel"
+import MatchList from "@/components/match/matchList";
 
 export default async function InProgressMatchList() {
+  /*
     //  get all games
     const games = await gameFactory().index()
     const matches = await matchFactory().index()
@@ -25,7 +26,6 @@ export default async function InProgressMatchList() {
         }
     }
 
-    return (
-        <MatchList matches={matchList}/>
-    )
+    */
+  return <MatchList matches={[]} />;
 }

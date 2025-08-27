@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 
 	"sports-day/api/db_model"
 	"sports-day/api/graph/model"
 	"sports-day/api/pkg/auth"
+	"sports-day/api/pkg/errors"
 	"sports-day/api/pkg/ulid"
 	"sports-day/api/repository"
 )
@@ -36,21 +36,17 @@ func NewAuthService(db *gorm.DB, userRepo repository.User, oidc auth.OIDC, jwt a
 func (s *AuthService) Login(ctx context.Context, code string, redirectURL string) (*model.AuthResponse, error) {
 	tokenData, err := s.oidc.Authenticate(ctx, code, redirectURL)
 	if err != nil {
-		//	TODO replace error
-		return nil, fmt.Errorf("failed to authenticate")
+		return nil, errors.Wrap(err)
 	}
 
 	if tokenData.Email == "" {
-		//	TODO replace error
-		log.Error().Msg("email not found in token")
-		return nil, fmt.Errorf("email not found in token")
+		return nil, errors.Wrap(fmt.Errorf("email not found in token"))
 	}
 
 	user, err := s.userRepo.FindByEmail(ctx, s.db, tokenData.Email)
 	if err != nil {
-		if err != gorm.ErrRecordNotFound {
-			//	TODO replace error
-			return nil, fmt.Errorf("failed to find user")
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.Wrap(err)
 		}
 
 		// if user not found, create new user
@@ -61,8 +57,7 @@ func (s *AuthService) Login(ctx context.Context, code string, redirectURL string
 		}
 		user, err = s.userRepo.Save(ctx, s.db, user)
 		if err != nil {
-			//	TODO replace error
-			return nil, fmt.Errorf("failed to create user")
+			return nil, errors.Wrap(err)
 		}
 	} else {
 		// if user exists, update name (if necessary)
@@ -70,8 +65,7 @@ func (s *AuthService) Login(ctx context.Context, code string, redirectURL string
 			user.Name = tokenData.Name
 			user, err = s.userRepo.Save(ctx, s.db, user)
 			if err != nil {
-				//	TODO replace error
-				return nil, fmt.Errorf("failed to update user")
+				return nil, errors.Wrap(err)
 			}
 		}
 	}
@@ -82,8 +76,7 @@ func (s *AuthService) Login(ctx context.Context, code string, redirectURL string
 		Name:   user.Name,
 	})
 	if err != nil {
-		//	TODO replace error
-		return nil, fmt.Errorf("failed to generate JWT")
+		return nil, errors.Wrap(err)
 	}
 
 	return &model.AuthResponse{

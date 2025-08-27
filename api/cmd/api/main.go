@@ -49,12 +49,14 @@ func main() {
 
 	// setup oidc
 	oidcRedirectURLs := strings.Split(env.Get().Auth.OIDC.RedirectURL, ",")
+	oidcScopes := strings.Split(env.Get().Auth.OIDC.Scopes, " ")
 	oidc, err := auth.NewOIDC(
 		context.Background(),
 		env.Get().Auth.OIDC.IssuerURL,
 		env.Get().Auth.OIDC.ClientID,
 		env.Get().Auth.OIDC.SecretKey,
 		oidcRedirectURLs,
+		oidcScopes,
 	)
 	if err != nil {
 		api.Logger.Fatal().
