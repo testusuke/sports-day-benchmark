@@ -94,14 +94,14 @@ func (s *AuthService) GetCurrentUser(ctx context.Context) (*db_model.User, error
 	// get user id from middleware
 	user_id, ok := auth.GetUserID(ctx)
 	if !ok {
-		return nil, nil
+		return nil, errors.ErrUnauthorized
 	}
 
 	// get user info by email
 	user, err := s.userRepo.Get(ctx, s.db, user_id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return nil, nil
+			return nil, errors.ErrUnauthorized
 		}
 		return nil, err
 	}

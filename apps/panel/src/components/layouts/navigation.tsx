@@ -1,4 +1,5 @@
 "use client";
+
 import * as React from "react";
 import PropTypes from "prop-types";
 import {
@@ -35,17 +36,26 @@ import { DialogProps } from "@mui/material/Dialog";
 import { DocsOverall } from "../rules/DocsOverall";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
-import { useFetchUserinfo } from "@/features/userinfo/hook";
 import PrivacyPolicyDrawer from "@/components/layouts/privacyPolicyDrawer";
 import { HiLibrary } from "react-icons/hi";
 import { useTheme } from "@mui/material/styles";
+import { gql } from "@/gql/__generated__";
+import { useSuspenseQuery } from "@apollo/client/react/hooks";
 
 type Anchor = "bottom";
+
+const query = gql(`
+  query GetUser {
+    me {
+      name
+    }
+  }
+`);
 
 export const Navigation = () => {
   const theme = useTheme();
   const router = useRouter();
-  const { user } = useFetchUserinfo();
+  const { data } = useSuspenseQuery(query);
 
   const [state, setState] = React.useState({
     bottom: false,
@@ -133,7 +143,6 @@ export const Navigation = () => {
                       width: "1.5em",
                       backgroundColor: "#5664e3",
                     }}
-                    // src={`${process.env.NEXT_PUBLIC_API_URL}/images/${user?.pictureId}/file`}
                   >
                     <HiUser />
                   </Avatar>
@@ -143,7 +152,7 @@ export const Navigation = () => {
                       fontSize: "16px",
                     }}
                   >
-                    {user?.name ?? "unknown"} さん
+                    {data.me.name} さん
                   </Typography>
                 </Stack>
               </CardContent>
@@ -286,41 +295,6 @@ export const Navigation = () => {
                 </Typography>
               </Stack>
             </Button>
-            {/*<Button*/}
-            {/*    color={"secondary"}*/}
-            {/*    sx={{*/}
-            {/*        background:theme.palette.secondary.dark,*/}
-            {/*        border:`1px solid ${theme.palette.warning.main}`*/}
-            {/*}}*/}
-            {/*    fullWidth disableElevation*/}
-            {/*    variant={"contained"}*/}
-            {/*    component={Link}*/}
-            {/*    href={"https://forms.office.com/Pages/ResponsePage.aspx?id=XYP-cpVeEkWK4KezivJfyNfX7_ygdxFHiwRmiJgWek1URUZOQ1JYTkpHWThPQVlQT1JBWFhWQllKVC4u"}*/}
-            {/*>*/}
-            {/*    <Stack*/}
-            {/*        direction={"row"}*/}
-            {/*        justifyContent={"flex-start"}*/}
-            {/*        alignItems={"center"}*/}
-            {/*        spacing={2}*/}
-            {/*        py={0.5}*/}
-            {/*        width={"100%"}*/}
-            {/*    >*/}
-            {/*        <Avatar*/}
-            {/*            sx={{*/}
-            {/*                height: "2em",*/}
-            {/*                width: "2em",*/}
-            {/*                backgroundColor: "inherit",*/}
-            {/*            }}*/}
-            {/*        >*/}
-            {/*            <SvgIcon>*/}
-            {/*                <HiClipboard color={`${theme.palette.text.primary}99`}/>*/}
-            {/*            </SvgIcon>*/}
-            {/*        </Avatar>*/}
-            {/*        <Typography sx={{color: theme.palette.text.primary, fontSize: "14px"}}>*/}
-            {/*            SPORTSDAY使用感アンケート*/}
-            {/*        </Typography>*/}
-            {/*    </Stack>*/}
-            {/*</Button>*/}
           </Stack>
         </Container>
       </Box>
@@ -446,7 +420,6 @@ export const Navigation = () => {
                       backgroundColor: "#5664e3",
                       boxShadow: "0px 0px 4px #7f8cd6",
                     }}
-                    // src={`${process.env.NEXT_PUBLIC_API_URL}/images/${user?.pictureId}/file`}
                   >
                     <HiUser />
                   </Avatar>

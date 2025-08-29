@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v14-appRouter";
 import { CssBaseline } from "@mui/material";
+import { ApolloProvider } from "@/components/ApolloProvider";
 // import GoogleAnalytics from "@/components/GoogleAnalytics";
 import ColorModeProvider from "@/components/theme/colorModeProvider";
 import Head from "next/head";
@@ -71,8 +72,10 @@ export default function RootLayout({
         <AppRouterCacheProvider>
           <ColorModeProvider>
             {/*<AnimatePresence mode={"wait"}>*/}
-            <CssBaseline />
-            {children}
+            <ApolloProvider>
+              <CssBaseline />
+              {children}
+            </ApolloProvider>
             {/* <GoogleAnalytics /> */}
             {/*</AnimatePresence>*/}
           </ColorModeProvider>

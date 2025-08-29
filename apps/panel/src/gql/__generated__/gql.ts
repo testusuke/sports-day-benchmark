@@ -15,9 +15,11 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  */
 type Documents = {
     "\n  mutation Login($code: String!, $redirect_uri: String!) {\n    login(input: { code: $code, redirectURL: $redirect_uri }) {\n      token\n    }\n  }\n": typeof types.LoginDocument,
+    "\n  query GetUser {\n    me {\n      name\n    }\n  }\n": typeof types.GetUserDocument,
 };
 const documents: Documents = {
     "\n  mutation Login($code: String!, $redirect_uri: String!) {\n    login(input: { code: $code, redirectURL: $redirect_uri }) {\n      token\n    }\n  }\n": types.LoginDocument,
+    "\n  query GetUser {\n    me {\n      name\n    }\n  }\n": types.GetUserDocument,
 };
 
 /**
@@ -38,6 +40,10 @@ export function gql(source: string): unknown;
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  mutation Login($code: String!, $redirect_uri: String!) {\n    login(input: { code: $code, redirectURL: $redirect_uri }) {\n      token\n    }\n  }\n"): (typeof documents)["\n  mutation Login($code: String!, $redirect_uri: String!) {\n    login(input: { code: $code, redirectURL: $redirect_uri }) {\n      token\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query GetUser {\n    me {\n      name\n    }\n  }\n"): (typeof documents)["\n  query GetUser {\n    me {\n      name\n    }\n  }\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

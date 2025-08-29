@@ -1,5 +1,10 @@
 "use client";
 
+export default function Page() {
+  return <div>Authenticated</div>;
+}
+
+/*
 import {
   Box,
   Container,
@@ -205,3 +210,4 @@ export default function Page() {
     </>
   );
 }
+*/

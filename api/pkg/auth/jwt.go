@@ -97,7 +97,7 @@ func (j *JWT) Validate(tokenString string) (*TokenData, error) {
 }
 
 func GetTokenFromRequest(r *http.Request) (string, error) {
-	cookie, err := r.Cookie("token")
+	cookie, err := r.Cookie("access_token")
 	if err == nil {
 		return cookie.Value, nil
 	}
