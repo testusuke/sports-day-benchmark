@@ -6,7 +6,7 @@ require (
 	github.com/99designs/gqlgen v0.17.64
 	github.com/coreos/go-oidc/v3 v3.12.0
 	github.com/go-sql-driver/mysql v1.8.1
-	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/golang-jwt/jwt/v5 v5.2.2
 	github.com/joho/godotenv v1.5.1
 	github.com/justinas/alice v1.2.0
 	github.com/kelseyhightower/envconfig v1.4.0
