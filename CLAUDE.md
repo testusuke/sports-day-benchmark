@@ -14,8 +14,6 @@ The project follows a monorepo structure with:
 - **Backend API** (`/api`): Go-based GraphQL API using gqlgen
 - **Admin Panel** (`/apps/admin`): Next.js admin interface for system management
 - **User Panel** (`/apps/panel`): Next.js user-facing interface for participants
-- **Form App** (`/apps/form`): Next.js form application
-- **Mock Services** (`/mock`): TypeScript mock/testing utilities
 
 ### Backend Architecture
 
@@ -68,19 +66,11 @@ make migrate-seed        # Run database seeds
 ```bash
 # Admin panel
 cd apps/admin
-yarn dev                 # Start dev server
-yarn build              # Production build
-yarn lint               # Run ESLint
+yarn run dev                 # Start dev server
 
 # User panel
 cd apps/panel
-yarn dev                 # Start dev server
-yarn build              # Production build
-yarn lint               # Run ESLint
-
-# Form app
-cd apps/form
-yarn dev                 # Start dev server
+yarn run dev                 # Start dev server
 ```
 
 ## Key Development Practices
