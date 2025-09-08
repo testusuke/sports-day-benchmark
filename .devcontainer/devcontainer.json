@@ -1,5 +1,5 @@
 {
-  "name": "sports-day-devcontainer",
+  "name": "sports-day-benchmark-devcontainer",
   "dockerComposeFile": "docker-compose.dev.yaml",
   "service": "app",
   "workspaceFolder": "/workspace",
