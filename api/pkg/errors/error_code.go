@@ -48,6 +48,7 @@ var (
 	ErrUnauthorized = NewError("UNAUTHORIZED", "ログインしてください")
 	ErrForbidden    = NewError("FORBIDDEN", "アクセスできません")
 	ErrTokenExpired = NewError("TOKEN_EXPIRED", "再度ログインしてください")
+	ErrInvalidToken = NewError("INVALID_TOKEN", "トークンが無効です")
 	ErrLoginFailed  = NewError("LOGIN_FAILED", "ログインできません")
 	ErrAuth         = NewError("AUTH_ERROR", "認証エラーが発生しました")
 )

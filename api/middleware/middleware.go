@@ -13,7 +13,6 @@ func SetupMiddleware(handler http.Handler, jwt auth.JWT, userSvc service.User, g
 	chain := alice.New()
 	chain = chain.Append(CORS().Handler)
 	chain = chain.Append(LoaderMiddleware(userSvc, groupSvc, teamSvc, competitionSvc, locationSvc, matchSvc, judgmentSvc, leagueSvc))
-	// chain = chain.Append(Auth(jwt))
-
+	chain = chain.Append(Auth(&jwt))
 	return chain.Then(handler)
 }
