@@ -7,7 +7,6 @@ services:
       - ..:/workspace:cached
   mysql:
     image: mysql:8
-    container_name: sports-day-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: sportsday
