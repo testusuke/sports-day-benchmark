@@ -23,9 +23,12 @@ gen-help-md: ## ヘルプをMarkdown形式で出力
 	@printf "|---------|-------------|\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "| make %-20s | %s |\n", $$1, $$2}'
 
-MIGRATION_COMMENT ?= $(shell bash -c 'read -p "Comments: " pwd; echo $$pwd')
-migrate-new: ## マイグレーションファイル作成
-	@DATABASE_URL=$(DATABASE_HOST)/$(RDB_NAME) go tool dbmate -d $(BACKEND_DIR)/db_schema/migrations -s $(BACKEND_DIR)/db_schema/schema.sql new $(MIGRATION_COMMENT)
+migrate-new: ## マイグレーションファイル作成 (使用例: make migrate-new COMMENT="add users table")
+	@if [ -z "$(COMMENT)" ]; then \
+		echo "Error: COMMENT is required. Usage: make migrate-new COMMENT=\"your comment\""; \
+		exit 1; \
+	fi
+	@DATABASE_URL=$(DATABASE_HOST)/$(RDB_NAME) go tool dbmate -d $(BACKEND_DIR)/db_schema/migrations -s $(BACKEND_DIR)/db_schema/schema.sql new "$(COMMENT)"
 
 migrate-status: ## マイグレーションステータス確認
 	@DATABASE_URL=$(DATABASE_HOST)/$(RDB_NAME) go tool dbmate -d $(BACKEND_DIR)/db_schema/migrations -s $(BACKEND_DIR)/db_schema/schema.sql status

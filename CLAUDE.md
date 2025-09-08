@@ -57,7 +57,7 @@ make gen-api             # Generate GraphQL code
 make backend/format      # Format Go code with goimports
 
 # Database utilities
-make migrate-new         # Create new migration (prompts for comment)
+make migrate-new COMMENT="<comment of migration file>"         # Create new migration
 make migrate-seed        # Run database seeds
 ```
 
@@ -93,7 +93,7 @@ yarn run dev                 # Start dev server
 ### Code Generation Workflow
 
 1. Make database schema changes in `api/db_schema/schema.sql`
-2. Create migration with `make migrate-new`
+2. Create migration with `make migrate-new COMMENT="<comment of migration file>"`
 3. Run `make migrate-up` to apply migration
 4. Run `make gen` to regenerate models and API code
 5. Implement any new resolvers or business logic

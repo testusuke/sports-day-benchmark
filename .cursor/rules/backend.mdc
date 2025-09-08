@@ -71,8 +71,7 @@ MySQL を採用します。
 - マイグレーション作成
 
 ```shell
-$ make migrate-new
-Comments: <コメントメッセージを入力>
+$ make migrate-new COMMENT="マイグレーションファイルのコメントメッセージ"
 ```
 
 - マイグレーション実行
